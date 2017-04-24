@@ -4,15 +4,15 @@
 
 #pragma once
 
-#include "StepTimer.h"
-
 #include <PrimitiveBatch.h>
 #include <VertexTypes.h>
 #include <Effects.h>
 #include <CommonStates.h>
 #include <SpriteBatch.h>
 #include <SimpleMath.h>
+#include <Model.h>
 
+#include "StepTimer.h"
 #include "DebugCamera.h"
 
 // A basic game implementation that creates a D3D11 device and
@@ -81,5 +81,16 @@ private:
 	DirectX::SimpleMath::Matrix m_view;
 	DirectX::SimpleMath::Matrix m_proj;
 
+	//　デバッグカメラ
 	std::unique_ptr<DebugCamera> m_debugcamera;
+
+	//　エフェクトファクトリー
+	std::unique_ptr<DirectX::EffectFactory> m_factorySkydoom;
+	std::unique_ptr<DirectX::EffectFactory> m_factoryGround;
+	std::unique_ptr<DirectX::EffectFactory> m_factory2;
+
+	//　モデル
+	std::unique_ptr<DirectX::Model> m_modelSkydoom;
+	std::unique_ptr<DirectX::Model> m_modelGround;
+	std::unique_ptr<DirectX::Model> m_model2;
 };

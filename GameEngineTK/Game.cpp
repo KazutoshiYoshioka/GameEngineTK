@@ -60,7 +60,23 @@ void Game::Initialize(HWND window, int width, int height)
 		shaderByteCode, byteCodeLength,
 		m_inputLayout.GetAddressOf());
 
+	//　デバッグカメラの生成
 	m_debugcamera = std::make_unique<DebugCamera>(m_outputWidth, m_outputHeight);
+
+	//　エフェクトファクトリーの生成
+	m_factorySkydoom = std::make_unique<EffectFactory>(m_d3dDevice.Get());
+	m_factoryGround = std::make_unique<EffectFactory>(m_d3dDevice.Get());
+	m_factory2 = std::make_unique<EffectFactory>(m_d3dDevice.Get());
+
+	//　テクスチャの読み込みフォルダを指定
+	m_factorySkydoom->SetDirectory(L"Resources");
+	m_factoryGround->SetDirectory(L"Resources");
+	m_factory2->SetDirectory(L"Resources");
+
+	//　モデルの読み込み
+	m_modelSkydoom = Model::CreateFromCMO(m_d3dDevice.Get(), L"Resources/Skydoom.cmo", *m_factorySkydoom);
+	m_modelGround = Model::CreateFromCMO(m_d3dDevice.Get(), L"Resources/ground1m.cmo", *m_factoryGround);
+	m_model2 = Model::CreateFromCMO(m_d3dDevice.Get(), L"Resources/sangou.cmo", *m_factory2);
 }
 
 // Executes the basic game loop.
@@ -100,7 +116,7 @@ void Game::Render()
     Clear();
 
     // TODO: Add your rendering code here.
-	//描画はここに書く
+	//　描画はここに書く
 
 	//　頂点インデックス
 	uint16_t indices[] =
@@ -130,7 +146,7 @@ void Game::Render()
 		Vector3(0, 0, 0), Vector3(0, 0, 0));*/
 	
 	m_proj = Matrix::CreatePerspectiveFieldOfView(XM_PI / 4.f,
-		float(m_outputWidth) / float(m_outputHeight), 0.1f, 10.f);
+		float(m_outputWidth) / float(m_outputHeight), 0.1f, 500.f);
 
 	m_basicEffect->SetView(m_view);
 	m_basicEffect->SetProjection(m_proj);
@@ -138,12 +154,16 @@ void Game::Render()
 	m_basicEffect->Apply(m_d3dContext.Get());
 	m_d3dContext->IASetInputLayout(m_inputLayout.Get());
 
+	//地面を描画
+	m_modelSkydoom->Draw(m_d3dContext.Get(), *m_states, m_world, m_view, m_proj);
+	m_modelGround->Draw(m_d3dContext.Get(), *m_states, m_world, m_view, m_proj);
+//	m_model2->Draw(m_d3dContext.Get(), *m_states, m_world, m_view, m_proj);
+
 	m_primitiveBatch->Begin();
 
 	m_primitiveBatch->DrawIndexed(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST, indices, 6, vertices, 4);
 
 	m_primitiveBatch->End();
-
 
     Present();
 }

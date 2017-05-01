@@ -66,17 +66,21 @@ void Game::Initialize(HWND window, int width, int height)
 	//　エフェクトファクトリーの生成
 	m_factorySkydoom = std::make_unique<EffectFactory>(m_d3dDevice.Get());
 	m_factoryGround = std::make_unique<EffectFactory>(m_d3dDevice.Get());
+	m_factoryBall = std::make_unique<EffectFactory>(m_d3dDevice.Get());
 	m_factory2 = std::make_unique<EffectFactory>(m_d3dDevice.Get());
 
 	//　テクスチャの読み込みフォルダを指定
 	m_factorySkydoom->SetDirectory(L"Resources");
 	m_factoryGround->SetDirectory(L"Resources");
+	m_factoryBall->SetDirectory(L"Resources");
 	m_factory2->SetDirectory(L"Resources");
 
 	//　モデルの読み込み
 	m_modelSkydoom = Model::CreateFromCMO(m_d3dDevice.Get(), L"Resources/Skydoom.cmo", *m_factorySkydoom);
-	m_modelGround = Model::CreateFromCMO(m_d3dDevice.Get(), L"Resources/ground1m.cmo", *m_factoryGround);
+	m_modelGround = Model::CreateFromCMO(m_d3dDevice.Get(), L"Resources/ground200m.cmo", *m_factoryGround);
+	m_modelBall = Model::CreateFromCMO(m_d3dDevice.Get(), L"Resources/ball.cmo", *m_factoryBall);
 	m_model2 = Model::CreateFromCMO(m_d3dDevice.Get(), L"Resources/sangou.cmo", *m_factory2);
+
 }
 
 // Executes the basic game loop.
@@ -102,6 +106,56 @@ void Game::Update(DX::StepTimer const& timer)
 	//　デバッグカメラの更新
 	m_debugcamera->Update();
 
+	//―――――――――――――――
+	//　球のワールド行列を計算する　｜
+	//―――――――――――――――
+	//	スケーリング
+	Matrix scalemat = Matrix::CreateScale(2.0f);
+
+	//　ロール
+	Matrix rotmatZ = Matrix::CreateRotationZ(XMConvertToRadians(15.0f));
+	//　ピッチ（仰角）
+	Matrix rotmatX = Matrix::CreateRotationX(XMConvertToRadians(15.0f)); //　XMConvertToRadiansで度をラジアンに変換する
+	//　ヨー
+	Matrix rotmatY = Matrix::CreateRotationY(XMConvertToRadians(15.0f));
+	//　回転行列の集合体
+	Matrix rotmat = rotmatZ * rotmatX * rotmatY;
+
+	//平行移動
+	Matrix transmat = Matrix::CreateTranslation(5.0f, 0.0f, 0.0f);
+
+	/*for (int i = 0; i < 10000; i++)
+	{
+		Matrix transground = Matrix::CreateTranslation(i / 100 * 1, 0, i % 100 * 1);
+		m_ground[i] = transground;
+	}*/
+
+	static int a = 0;
+	a++;
+	//　２０個の天球の行列
+	for (int i = 0; i < 20; i++)
+	{
+		Matrix transball = Matrix::CreateTranslation((i + 10) / 10 * 20, 0, 0);
+		Matrix rotateball = Matrix::CreateRotationY(XMConvertToRadians(i * 36));
+		Matrix rotateball2;
+		if (i < 10)
+		{
+			rotateball2 = Matrix::CreateRotationY(XMConvertToRadians(a));
+		}
+		else
+		{
+			rotateball2 = Matrix::CreateRotationY(XMConvertToRadians(a*-1));
+		}
+		m_worldBall[i] = transball*rotateball*rotateball2;
+	}
+
+	//行列の合成    倍率　×　回転　×　平行移動
+	m_worldball = scalemat * rotmat * transmat;
+	
+	for (int i = 0; i < 10; i++)
+	{
+	
+	}
 }
 
 // Draws the scene.
@@ -154,11 +208,24 @@ void Game::Render()
 	m_basicEffect->Apply(m_d3dContext.Get());
 	m_d3dContext->IASetInputLayout(m_inputLayout.Get());
 
-	//地面を描画
+	//　天球を描画
 	m_modelSkydoom->Draw(m_d3dContext.Get(), *m_states, m_world, m_view, m_proj);
-	m_modelGround->Draw(m_d3dContext.Get(), *m_states, m_world, m_view, m_proj);
-//	m_model2->Draw(m_d3dContext.Get(), *m_states, m_world, m_view, m_proj);
 
+	//　地面を描画
+	m_modelGround->Draw(m_d3dContext.Get(), *m_states, Matrix::Identity, m_view, m_proj);
+	/*for (int i = 0; i < 10000; i++)
+	{
+		m_modelGround->Draw(m_d3dContext.Get(), *m_states, m_ground[i], m_view, m_proj);
+	}*/
+	//　ボールを描画
+	//m_modelBall->Draw(m_d3dContext.Get(), *m_states, m_worldball, m_view, m_proj);
+//	m_model2->Draw(m_d3dContext.Get(), *m_states, m_worldBall[0], m_view, m_proj);
+
+	//　ボールを描画
+	for (int i = 0; i < 20; i++)
+	{
+		m_modelBall->Draw(m_d3dContext.Get(), *m_states, m_worldBall[i], m_view, m_proj);
+	}
 	m_primitiveBatch->Begin();
 
 	m_primitiveBatch->DrawIndexed(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST, indices, 6, vertices, 4);

@@ -77,6 +77,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11InputLayout> m_inputLayout;
 	std::unique_ptr<DirectX::CommonStates> m_states;
 
+	//　ワールド行列
 	DirectX::SimpleMath::Matrix m_world;
 	DirectX::SimpleMath::Matrix m_view;
 	DirectX::SimpleMath::Matrix m_proj;
@@ -87,10 +88,17 @@ private:
 	//　エフェクトファクトリー
 	std::unique_ptr<DirectX::EffectFactory> m_factorySkydoom;
 	std::unique_ptr<DirectX::EffectFactory> m_factoryGround;
+	std::unique_ptr<DirectX::EffectFactory> m_factoryBall;
 	std::unique_ptr<DirectX::EffectFactory> m_factory2;
 
 	//　モデル
 	std::unique_ptr<DirectX::Model> m_modelSkydoom;
 	std::unique_ptr<DirectX::Model> m_modelGround;
+	std::unique_ptr<DirectX::Model> m_modelBall;
 	std::unique_ptr<DirectX::Model> m_model2;
+
+	//　球のワールド行列
+	DirectX::SimpleMath::Matrix m_worldball;
+	DirectX::SimpleMath::Matrix m_ground[10000];
+	DirectX::SimpleMath::Matrix m_worldBall[20];
 };

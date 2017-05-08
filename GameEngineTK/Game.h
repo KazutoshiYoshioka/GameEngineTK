@@ -11,6 +11,7 @@
 #include <SpriteBatch.h>
 #include <SimpleMath.h>
 #include <Model.h>
+#include <Keyboard.h>
 
 #include "StepTimer.h"
 #include "DebugCamera.h"
@@ -89,16 +90,27 @@ private:
 	std::unique_ptr<DirectX::EffectFactory> m_factorySkydoom;
 	std::unique_ptr<DirectX::EffectFactory> m_factoryGround;
 	std::unique_ptr<DirectX::EffectFactory> m_factoryBall;
+	std::unique_ptr<DirectX::EffectFactory> m_factoryTank;
 	std::unique_ptr<DirectX::EffectFactory> m_factory2;
 
 	//　モデル
 	std::unique_ptr<DirectX::Model> m_modelSkydoom;
 	std::unique_ptr<DirectX::Model> m_modelGround;
 	std::unique_ptr<DirectX::Model> m_modelBall;
+	std::unique_ptr<DirectX::Model> m_modelTank;
+
 	std::unique_ptr<DirectX::Model> m_model2;
 
 	//　球のワールド行列
 	DirectX::SimpleMath::Matrix m_worldball;
 	DirectX::SimpleMath::Matrix m_ground[10000];
 	DirectX::SimpleMath::Matrix m_worldBall[20];
+	DirectX::SimpleMath::Matrix m_worldTank;
+
+	//　キーボード
+	std::unique_ptr<DirectX::Keyboard> m_key;
+
+	//　タンク座標
+	DirectX::SimpleMath::Vector3 m_TankPos;
+	float m_TankRot;
 };

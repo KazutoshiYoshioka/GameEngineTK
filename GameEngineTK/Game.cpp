@@ -90,6 +90,8 @@ void Game::Initialize(HWND window, int width, int height)
 	m_model2 = Model::CreateFromCMO(m_d3dDevice.Get(), L"Resources/sangou.cmo", *m_factory2);
 
 	m_TankRot = 0.0f;
+
+	m_camera = std::make_unique<Camera>(m_outputWidth, m_outputHeight);
 }
 
 // Executes the basic game loop.
@@ -204,7 +206,16 @@ void Game::Update(DX::StepTimer const& timer)
 		//　平行移動行列
 	Matrix transTank = Matrix::CreateTranslation(m_TankPos);
 	Matrix rotateTank = Matrix::CreateRotationY(XMConvertToRadians(m_TankRot));
-	m_worldTank =  rotateTank * transTank;
+	Matrix changeVec = Matrix::CreateRotationY(XMConvertToRadians(180.0f));
+	m_worldTank = changeVec * rotateTank * transTank;
+
+
+	m_camera->SetEyePos(m_TankPos);
+	m_camera->SetRefPos(Vector3(0, 0, 100));
+
+	m_camera->Update();
+	m_view = m_camera->GetViewMatrix();
+	m_proj = m_camera->GetProjectionMatrix();
 }
 
 // Draws the scene.
@@ -244,12 +255,35 @@ void Game::Render()
 	m_d3dContext->RSSetState(m_states->CullClockwise());
 	
 	//　デバッグカメラからビュー行列を取得
-	m_view = m_debugcamera->GetCameraMatrix();
-	/*m_view = Matrix::CreateLookAt(Vector3(2.f, 2.f, 2.f),
-		Vector3(0, 0, 0), Vector3(0, 0, 0));*/
+	//m_view = m_debugcamera->GetCameraMatrix();
+
+	////　カメラの位置（視点座標）
+	//Vector3 eyepos(0.0f, 0.5f, 0.0f);
+	////　どこを見るのか（注視点、参照点）
+	//Vector3 refpos(0.0f, 0.0f, 0.0f);
+	////　上方向ベクトル
+	//Vector3 upvec(0.0f, -1.0f, 0.0f);
+	//upvec.Normalize();
+	////　ビュー行列を作成
+	//m_view = Matrix::CreateLookAt(eyepos, refpos, upvec);
+
+	////　垂直方向視野角
+	//float fovY = XMConvertToRadians(60.0f);
+	////　画面横幅と縦幅の比率
+	//float aspect = (float)m_outputWidth / m_outputHeight;
+	////　手前の表示限界距離
+	//float nearclip = 0.1f;
+	//// 奥の表示限界距離
+	//float farclip = 1000.0f;
+	////射影行列を生成
+	//m_proj = Matrix::CreatePerspectiveFieldOfView(fovY, aspect, nearclip, farclip);
 	
-	m_proj = Matrix::CreatePerspectiveFieldOfView(XM_PI / 4.f,
-		float(m_outputWidth) / float(m_outputHeight), 0.1f, 500.f);
+
+	//m_view = Matrix::CreateLookAt(Vector3(2.f, 2.f, 2.f),
+	//	Vector3(0, 0, 0), Vector3(0, 0, 0));
+	
+	/*m_proj = Matrix::CreatePerspectiveFieldOfView(XM_PI / 4.f,
+		float(m_outputWidth) / float(m_outputHeight), 0.1f, 500.f);*/
 
 	m_basicEffect->SetView(m_view);
 	m_basicEffect->SetProjection(m_proj);

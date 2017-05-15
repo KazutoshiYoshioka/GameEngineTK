@@ -19,7 +19,7 @@ class Camera
 		virtual ~Camera();
 
 		//　更新
-		void Update();
+		virtual void Update();
 
 		// ビュー座標を取得
 		DirectX::SimpleMath::Matrix GetViewMatrix();
@@ -28,9 +28,19 @@ class Camera
 		DirectX::SimpleMath::Matrix GetProjectionMatrix();
 
 		//　視点座標をセット
-		void SetEyePos(DirectX::SimpleMath::Vector3 eyepos);
-
-		void SetRefPos(DirectX::SimpleMath::Vector3 refpos);
+		void SetEyePos(DirectX::SimpleMath::Vector3 &eyepos);
+		//　注視点座標をセット
+		void SetRefPos(DirectX::SimpleMath::Vector3 &refpos);
+		//　上方向ベクトルをセット
+		void SetUpVec(DirectX::SimpleMath::Vector3 &upVec);
+		//　垂直方向視野角をセット
+		void SetFovY(float fovY);
+		//　アスペクト比をセット
+		void SetAspect(int windowWidth,int windowHeight);
+		//　手前の限界距離をセット
+		void SetNearClip(float nearclip);
+		//　奥の限界距離をセット
+		void SetFarClip(float farclip);
 
 	protected:
 		//　メンバ変数を置くところ

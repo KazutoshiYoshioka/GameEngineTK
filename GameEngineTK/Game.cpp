@@ -91,7 +91,8 @@ void Game::Initialize(HWND window, int width, int height)
 
 	m_TankRot = 0.0f;
 
-	m_camera = std::make_unique<Camera>(m_outputWidth, m_outputHeight);
+	m_camera = std::make_unique<FollowCamera>(m_outputWidth, m_outputHeight);
+
 }
 
 // Executes the basic game loop.
@@ -169,11 +170,11 @@ void Game::Update(DX::StepTimer const& timer)
 	//　旋回処理
 	if (g_key.A)
 	{
-		m_TankRot++;
+		m_TankRot+=0.01f;
 	}
 	if (g_key.D)
 	{
-		m_TankRot--;
+		m_TankRot-=0.01f;
 	}
 
 	//　移動処理
@@ -210,8 +211,8 @@ void Game::Update(DX::StepTimer const& timer)
 	m_worldTank = changeVec * rotateTank * transTank;
 
 
-	m_camera->SetEyePos(m_TankPos);
-	m_camera->SetRefPos(Vector3(0, 0, 100));
+	m_camera->SetTargetPos(m_TankPos);
+	m_camera->SetTargetAngle(m_TankRot);
 
 	m_camera->Update();
 	m_view = m_camera->GetViewMatrix();
@@ -300,14 +301,15 @@ void Game::Render()
 	{
 		m_modelGround->Draw(m_d3dContext.Get(), *m_states, m_ground[i], m_view, m_proj);
 	}*/
+
 	//　ボールを描画
 	//m_modelBall->Draw(m_d3dContext.Get(), *m_states, m_worldball, m_view, m_proj);
 	Matrix scalemat = Matrix::CreateScale(0.01f);
 
-	//m_model2->Draw(m_d3dContext.Get(), *m_states, scalemat*m_worldTank, m_view, m_proj);
+	m_model2->Draw(m_d3dContext.Get(), *m_states, scalemat*m_worldTank, m_view, m_proj);
 
 	//　戦車描画
-	m_modelTank->Draw(m_d3dContext.Get(), *m_states, m_worldTank, m_view, m_proj);
+	//m_modelTank->Draw(m_d3dContext.Get(), *m_states, m_worldTank, m_view, m_proj);
 
 	//　ボールを描画
 	for (int i = 0; i < 20; i++)

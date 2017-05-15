@@ -16,6 +16,7 @@
 #include "StepTimer.h"
 #include "DebugCamera.h"
 #include "Camera.h"
+#include "FollowCamera.h"
 
 // A basic game implementation that creates a D3D11 device and
 // provides a game loop.
@@ -115,6 +116,7 @@ private:
 	DirectX::SimpleMath::Vector3 m_TankPos;
 	float m_TankRot;
 
+
 	//Å@ÉJÉÅÉâ
-	std::unique_ptr<Camera> m_camera;
+	std::unique_ptr<FollowCamera> m_camera;
 };

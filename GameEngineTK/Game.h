@@ -17,6 +17,7 @@
 #include "DebugCamera.h"
 #include "Camera.h"
 #include "FollowCamera.h"
+#include "Obj3d.h"
 
 // A basic game implementation that creates a D3D11 device and
 // provides a game loop.
@@ -99,22 +100,26 @@ private:
 	std::unique_ptr<DirectX::Model> m_modelSkydoom;
 	std::unique_ptr<DirectX::Model> m_modelGround;
 	std::unique_ptr<DirectX::Model> m_modelBall;
-	std::unique_ptr<DirectX::Model> m_modelTank;
+	std::unique_ptr<DirectX::Model> m_modelSmallTank;
 
-	std::unique_ptr<DirectX::Model> m_model2;
+	std::unique_ptr<DirectX::Model> m_modelTank;
 
 	//　球のワールド行列
 	DirectX::SimpleMath::Matrix m_worldball;
 	DirectX::SimpleMath::Matrix m_ground[10000];
 	DirectX::SimpleMath::Matrix m_worldBall[20];
 	DirectX::SimpleMath::Matrix m_worldTank;
+	DirectX::SimpleMath::Matrix m_worldTank2;
 
 	//　キーボード
 	std::unique_ptr<DirectX::Keyboard> m_key;
 
 	//　タンク座標
 	DirectX::SimpleMath::Vector3 m_TankPos;
+	//　タンクの回転角
 	float m_TankRot;
+	//
+	
 
 
 	//　カメラ

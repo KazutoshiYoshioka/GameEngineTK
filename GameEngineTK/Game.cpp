@@ -41,7 +41,18 @@ void Game::Initialize(HWND window, int width, int height)
     m_timer.SetTargetElapsedSeconds(1.0 / 60);
     */
 
+
+
 	//初期化はここに書く
+	m_camera = std::make_unique<FollowCamera>(m_outputWidth, m_outputHeight);
+	m_camera->SetKeyboard(m_key.get());
+
+	Obj3d::InitializeStatic(
+		m_camera.get()
+		, m_d3dDevice
+		, m_d3dContext
+	);
+
 	m_primitiveBatch = std::make_unique<PrimitiveBatch<VertexPositionNormal>>(m_d3dContext.Get());//←コンストラクタの引数
 
 	m_basicEffect = std::make_unique<BasicEffect>(m_d3dDevice.Get());
@@ -85,13 +96,11 @@ void Game::Initialize(HWND window, int width, int height)
 	m_modelSkydoom = Model::CreateFromCMO(m_d3dDevice.Get(), L"Resources/Skydoom.cmo", *m_factorySkydoom);
 	m_modelGround = Model::CreateFromCMO(m_d3dDevice.Get(), L"Resources/ground200m.cmo", *m_factoryGround);
 	m_modelBall = Model::CreateFromCMO(m_d3dDevice.Get(), L"Resources/ball.cmo", *m_factoryBall);
-	m_modelTank = Model::CreateFromCMO(m_d3dDevice.Get(), L"Resources/Tank.cmo", *m_factoryTank);
+	m_modelSmallTank = Model::CreateFromCMO(m_d3dDevice.Get(), L"Resources/Tank.cmo", *m_factoryTank);
 
-	m_model2 = Model::CreateFromCMO(m_d3dDevice.Get(), L"Resources/sangou.cmo", *m_factory2);
+	m_modelTank = Model::CreateFromCMO(m_d3dDevice.Get(), L"Resources/sangou.cmo", *m_factory2);
 
 	m_TankRot = 0.0f;
-
-	m_camera = std::make_unique<FollowCamera>(m_outputWidth, m_outputHeight);
 
 }
 
@@ -170,11 +179,11 @@ void Game::Update(DX::StepTimer const& timer)
 	//　旋回処理
 	if (g_key.A)
 	{
-		m_TankRot+=0.01f;
+		m_TankRot++;
 	}
 	if (g_key.D)
 	{
-		m_TankRot-=0.01f;
+		m_TankRot--;
 	}
 
 	//　移動処理
@@ -203,16 +212,22 @@ void Game::Update(DX::StepTimer const& timer)
 	}
 
 
-	//　自機のワールド行列を計算
+	{//　自機のワールド行列を計算
 		//　平行移動行列
-	Matrix transTank = Matrix::CreateTranslation(m_TankPos);
-	Matrix rotateTank = Matrix::CreateRotationY(XMConvertToRadians(m_TankRot));
-	Matrix changeVec = Matrix::CreateRotationY(XMConvertToRadians(180.0f));
-	m_worldTank = changeVec * rotateTank * transTank;
+		Matrix transTank = Matrix::CreateTranslation(m_TankPos);
+		Matrix rotateTank = Matrix::CreateRotationY(XMConvertToRadians(m_TankRot));
+		Matrix changeVec = Matrix::CreateRotationY(XMConvertToRadians(180.0f));
+		m_worldTank = changeVec * rotateTank * transTank;
 
-
+		//　自機のパーツ２を計算
+		//　回転行列（パーツ１からの回転分）
+		//Matrix rotmatTank2 = Matrix::CreateRotationZ(XM_PIDIV2)*Matrix::CreateRotationY(XM_PI);
+		//　平行移動行列（パーツ１からの平行移動分）
+		Matrix transTank2 = Matrix::CreateTranslation(Vector3(3.0f, 0, -2.5));
+		m_worldTank2 = transTank2 * m_worldTank;
+	}
 	m_camera->SetTargetPos(m_TankPos);
-	m_camera->SetTargetAngle(m_TankRot);
+	m_camera->SetTargetAngle(XMConvertToRadians(m_TankRot));
 
 	m_camera->Update();
 	m_view = m_camera->GetViewMatrix();
@@ -306,7 +321,9 @@ void Game::Render()
 	//m_modelBall->Draw(m_d3dContext.Get(), *m_states, m_worldball, m_view, m_proj);
 	Matrix scalemat = Matrix::CreateScale(0.01f);
 
-	m_model2->Draw(m_d3dContext.Get(), *m_states, scalemat*m_worldTank, m_view, m_proj);
+	m_modelTank->Draw(m_d3dContext.Get(), *m_states, scalemat*m_worldTank, m_view, m_proj);
+
+	m_modelTank->Draw(m_d3dContext.Get(), *m_states, scalemat*m_worldTank2, m_view, m_proj);
 
 	//　戦車描画
 	//m_modelTank->Draw(m_d3dContext.Get(), *m_states, m_worldTank, m_view, m_proj);

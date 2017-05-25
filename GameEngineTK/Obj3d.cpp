@@ -6,23 +6,32 @@
 #include "Obj3d.h"
 
 using namespace DirectX;
-using namespace SimpleMath;
+using namespace DirectX::SimpleMath;
 
 //―――――――――――――――――――――――――――――――――
 //　静的メンバの実体
 //―――――――――――――――――――――――――――――――――
 
 //　カメラ
-Camera*											m_pCamera;
+Camera*											Obj3d::m_pCamera;
 //　汎用ステート
-std::unique_ptr<DirectX::CommonStates>			m_states;
+std::unique_ptr<DirectX::CommonStates>			Obj3d::m_states;
 //　デバイス
-Microsoft::WRL::ComPtr<ID3D11Device>			m_d3dDevice;
+Microsoft::WRL::ComPtr<ID3D11Device>			Obj3d::m_d3dDevice;
 //　コンテキスト
-Microsoft::WRL::ComPtr<ID3D11DeviceContext>		m_d3dContext;
+Microsoft::WRL::ComPtr<ID3D11DeviceContext>		Obj3d::m_d3dContext;
 //　エフェクトファクトリ
-std::unique_ptr<DirectX::EffectFactory>			m_factory;
+std::unique_ptr<DirectX::EffectFactory>			Obj3d::m_factory;
 
+
+//　コンストラクタ
+Obj3d::Obj3d()
+{
+	//　変数の初期化
+	m_scale = Vector3(1, 1, 1);
+
+	m_pObjParent = nullptr;
+}
 
 void Obj3d::InitializeStatic(Camera * pCamera, 
 	Microsoft::WRL::ComPtr<ID3D11Device> d3dDevice, 
@@ -37,3 +46,50 @@ void Obj3d::InitializeStatic(Camera * pCamera,
 	m_factory->SetDirectory(L"Resources");
 }
 
+
+void Obj3d::LoadModel(const wchar_t *filename)
+{
+	m_model = Model::CreateFromCMO(m_d3dDevice.Get(), filename, *m_factory);
+}
+
+void Obj3d::Update()
+{
+	//―――――――――――――――――――――――――――――――――
+	// 行列を計算する
+	//―――――――――――――――――――――――――――――――――
+	 
+	//　スケーリング行列
+	Matrix scalemat = Matrix::CreateScale(m_scale);
+	
+	//　回転行列
+	Matrix rotmatZ = Matrix::CreateRotationZ(m_rotation.z);
+	Matrix rotmatX = Matrix::CreateRotationX(m_rotation.x);
+	Matrix rotmatY = Matrix::CreateRotationY(m_rotation.y);
+
+	Matrix rotmat = rotmatZ * rotmatX * rotmatY;
+
+	//　平行移動行列
+	Matrix transmat = Matrix::CreateTranslation(m_translation);
+
+	//　ワールド行列を合成
+	m_world = scalemat * rotmat * transmat;
+	
+	//　親が存在する場合
+	if (m_pObjParent)
+	{
+		m_world *= m_pObjParent->GetWorld();
+	}
+}
+
+void Obj3d::Draw()
+{
+	//　モデルが存在していれば描画
+	if (m_model)
+	{
+		m_model->Draw(m_d3dContext.Get(),
+			*m_states,
+			m_world,
+			m_pCamera->GetViewMatrix(),
+			m_pCamera->GetProjectionMatrix());
+	}
+}

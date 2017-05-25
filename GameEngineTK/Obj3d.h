@@ -43,33 +43,50 @@ class Obj3d
 		//　モデルの読み込み
 		void LoadModel(const wchar_t *filename);
 
+		//　更新処理
+		void Update();
+
+		//　描画処理
+		void Draw();
+
 		//―――――――――――――――――――――――――――――――――
 		//　setter
 		//―――――――――――――――――――――――――――――――――
 
 		//　スケーリング用
-
-		//　平行移動用
-
+		void SetScale(const DirectX::SimpleMath::Vector3 &scale) { m_scale = scale; }
 		//　回転角用
-
+		void SetRotation(const DirectX::SimpleMath::Vector3 &rotation) { m_rotation = rotation; }
+		//　平行移動用
+		void SetTranslation(const DirectX::SimpleMath::Vector3 &translation) { m_translation = translation; }
+		//　親行列用
+		void SetObjectParent(Obj3d *pObjParent) { m_pObjParent = pObjParent; }
 		//―――――――――――――――――――――――――――――――――
 		//　getter
 		//―――――――――――――――――――――――――――――――――
-
+		
+		//　スケーリングを取得
+		const DirectX::SimpleMath::Vector3& GetScale() { return m_scale; }
+		//　回転を取得
+		const DirectX::SimpleMath::Vector3& GetRotation() { return m_rotation; }
+		//　平行移動を取得
+		const DirectX::SimpleMath::Vector3& GetTranslation() { return m_translation; }
 		//　ワールド行列を取得
-
+		const DirectX::SimpleMath::Matrix& GetWorld() { return m_world; }
+		//　親行列を取得
+		Obj3d* GetObjParent() { return m_pObjParent; }
+		
 	private:
 		//　モデルのユニークポインタ
-
+		std::unique_ptr<DirectX::Model>	m_model;
 		//　スケーリング
-
-		//　平行移動
-
+		DirectX::SimpleMath::Vector3	m_scale;
 		//　回転角
-
+		DirectX::SimpleMath::Vector3	m_rotation;
+		//　平行移動
+		DirectX::SimpleMath::Vector3	m_translation;
 		//　ワールド行列
-
+		DirectX::SimpleMath::Matrix		m_world;
 		//　親となる３Ｄオブジェクトのクラスのポインタ
-		Obj3d* m_pObj_Parent;
+		Obj3d* m_pObjParent;
 };

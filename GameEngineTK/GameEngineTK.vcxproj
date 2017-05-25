@@ -199,12 +199,17 @@
   </ItemGroup>
   <ItemGroup>
     <MeshContentTask Include="Assets\ball.FBX" />
+    <MeshContentTask Include="Assets\Body.FBX" />
+    <MeshContentTask Include="Assets\Cannon.FBX" />
+    <MeshContentTask Include="Assets\Engine.FBX" />
     <MeshContentTask Include="Assets\ground1m.FBX" />
     <MeshContentTask Include="Assets\ground200m.FBX" />
     <MeshContentTask Include="Assets\sangou.FBX" />
+    <MeshContentTask Include="Assets\Ship.FBX" />
     <MeshContentTask Include="Assets\Skydoom.FBX" />
     <MeshContentTask Include="Assets\Tank.FBX" />
     <MeshContentTask Include="Assets\teapot.FBX" />
+    <MeshContentTask Include="Assets\Wing.FBX" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

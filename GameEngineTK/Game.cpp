@@ -93,7 +93,8 @@ void Game::Initialize(HWND window, int width, int height)
 	m_factory2->SetDirectory(L"Resources");
 
 	//　モデルの読み込み
-	m_modelSkydoom = Model::CreateFromCMO(m_d3dDevice.Get(), L"Resources/Skydoom.cmo", *m_factorySkydoom);
+	m_ObjSkydoom.LoadModel(L"Resources/Skydoom.cmo");
+
 	m_modelGround = Model::CreateFromCMO(m_d3dDevice.Get(), L"Resources/ground200m.cmo", *m_factoryGround);
 	m_modelBall = Model::CreateFromCMO(m_d3dDevice.Get(), L"Resources/ball.cmo", *m_factoryBall);
 	m_modelSmallTank = Model::CreateFromCMO(m_d3dDevice.Get(), L"Resources/Tank.cmo", *m_factoryTank);
@@ -102,6 +103,12 @@ void Game::Initialize(HWND window, int width, int height)
 
 	m_TankRot = 0.0f;
 
+	m_ObjPlayer.resize(PLAYER_PARTS_NUM);
+	m_ObjPlayer[PLAYER_SHIP].LoadModel(L"Resources / Ship.cmo");
+	m_ObjPlayer[PLAYER_BODY].LoadModel(L"Resources / Body.cmo");
+	m_ObjPlayer[PLAYER_WING].LoadModel(L"Resources / Wing.cmo");
+	m_ObjPlayer[PLAYER_ENGINE].LoadModel(L"Resources / Engine.cmo");
+	m_ObjPlayer[PLAYER_CANNON].LoadModel(L"Resources / Cannon.cmo");
 }
 
 // Executes the basic game loop.
@@ -232,6 +239,15 @@ void Game::Update(DX::StepTimer const& timer)
 	m_camera->Update();
 	m_view = m_camera->GetViewMatrix();
 	m_proj = m_camera->GetProjectionMatrix();
+
+	m_ObjSkydoom.Update();
+
+	for (std::vector<Obj3d>::iterator it = m_ObjPlayer.begin();
+		it !=m_ObjPlayer.end();
+		it++)
+	{
+		m_ObjPlayer;
+	}
 }
 
 // Draws the scene.
@@ -308,7 +324,7 @@ void Game::Render()
 	m_d3dContext->IASetInputLayout(m_inputLayout.Get());
 
 	//　天球を描画
-	m_modelSkydoom->Draw(m_d3dContext.Get(), *m_states, m_world, m_view, m_proj);
+	m_ObjSkydoom.Draw();
 
 	//　地面を描画
 	m_modelGround->Draw(m_d3dContext.Get(), *m_states, Matrix::Identity, m_view, m_proj);

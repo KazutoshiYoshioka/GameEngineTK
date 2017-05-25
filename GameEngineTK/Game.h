@@ -25,6 +25,17 @@ class Game
 {
 public:
 
+	enum PLAYER_PARTS
+	{
+		PLAYER_SHIP,	//　船体
+		PLAYER_BODY,	//　機体
+		PLAYER_WING,	//　翼
+		PLAYER_ENGINE,	//　エンジン
+		PLAYER_CANNON,	//　砲塔
+
+		PLAYER_PARTS_NUM
+	};
+
     Game();
 
     // Initialization and management
@@ -97,10 +108,13 @@ private:
 	std::unique_ptr<DirectX::EffectFactory> m_factory2;
 
 	//　モデル
-	std::unique_ptr<DirectX::Model> m_modelSkydoom;
+	//std::unique_ptr<DirectX::Model> m_modelSkydoom;
 	std::unique_ptr<DirectX::Model> m_modelGround;
 	std::unique_ptr<DirectX::Model> m_modelBall;
 	std::unique_ptr<DirectX::Model> m_modelSmallTank;
+
+	Obj3d m_ObjSkydoom;
+	std::vector<Obj3d> m_ObjPlayer;
 
 	std::unique_ptr<DirectX::Model> m_modelTank;
 

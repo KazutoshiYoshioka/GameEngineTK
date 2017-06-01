@@ -27,8 +27,8 @@ public:
 
 	enum PLAYER_PARTS
 	{
-		PLAYER_SHIP,	//　船体
 		PLAYER_BODY,	//　機体
+		PLAYER_SHIP,	//　船体
 		PLAYER_WING,	//　翼
 		PLAYER_ENGINE,	//　エンジン
 		PLAYER_CANNON,	//　砲塔
@@ -101,11 +101,7 @@ private:
 	std::unique_ptr<DebugCamera> m_debugcamera;
 
 	//　エフェクトファクトリー
-	std::unique_ptr<DirectX::EffectFactory> m_factorySkydoom;
-	std::unique_ptr<DirectX::EffectFactory> m_factoryGround;
-	std::unique_ptr<DirectX::EffectFactory> m_factoryBall;
-	std::unique_ptr<DirectX::EffectFactory> m_factoryTank;
-	std::unique_ptr<DirectX::EffectFactory> m_factory2;
+	std::unique_ptr<DirectX::EffectFactory> m_factory;
 
 	//　モデル
 	//std::unique_ptr<DirectX::Model> m_modelSkydoom;
@@ -115,6 +111,7 @@ private:
 
 	Obj3d m_ObjSkydoom;
 	std::vector<Obj3d> m_ObjPlayer;
+	Obj3d m_ObjTank;
 
 	std::unique_ptr<DirectX::Model> m_modelTank;
 

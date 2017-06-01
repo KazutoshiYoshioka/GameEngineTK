@@ -18,9 +18,9 @@ class FollowCamera :public Camera
 		//　コンストラクタ
 		FollowCamera(int windowWidth, int windowHeight);
 		//　追従対象座標をセット
-		void SetTargetPos(DirectX::SimpleMath::Vector3 &targetpos);
+		void SetTargetPos(const DirectX::SimpleMath::Vector3 &targetpos);
 		//　追従対象角度をセット
-		void SetTargetAngle(float angle);
+		void SetTargetAngle(const float angle);
 		//　毎フレーム更新
 		void Update()override;
 		//　TPSカメラの初期化

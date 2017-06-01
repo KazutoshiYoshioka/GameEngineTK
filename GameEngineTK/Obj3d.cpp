@@ -84,7 +84,7 @@ void Obj3d::Update()
 void Obj3d::Draw()
 {
 	//@ƒ‚ƒfƒ‹‚ª‘¶Ý‚µ‚Ä‚¢‚ê‚Î•`‰æ
-	if (m_model)
+	if (m_model != nullptr)
 	{
 		m_model->Draw(m_d3dContext.Get(),
 			*m_states,

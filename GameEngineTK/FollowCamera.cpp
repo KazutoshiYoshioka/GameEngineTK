@@ -22,12 +22,12 @@ FollowCamera::FollowCamera(int windowWidth, int windowHeight)
 	InitializeTPS();
 }
 
-void FollowCamera::SetTargetPos(Vector3 &targetPos)
+void FollowCamera::SetTargetPos(const Vector3 &targetPos)
 {
 	m_targetPos = targetPos;
 }
 
-void FollowCamera::SetTargetAngle(float targetAngle)
+void FollowCamera::SetTargetAngle(const float targetAngle)
 {
 	m_targetAngle = targetAngle;
 }

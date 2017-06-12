@@ -31,6 +31,9 @@ Obj3d::Obj3d()
 	m_scale = Vector3(1, 1, 1);
 
 	m_pObjParent = nullptr;
+
+	//　デフォルトではクォータニオンを使わない
+	m_UseQuternion = false;
 }
 
 void Obj3d::InitializeStatic(Camera * pCamera, 
@@ -62,12 +65,21 @@ void Obj3d::Update()
 	Matrix scalemat = Matrix::CreateScale(m_scale);
 	
 	//　回転行列
-	Matrix rotmatZ = Matrix::CreateRotationZ(m_rotation.z);
-	Matrix rotmatX = Matrix::CreateRotationX(m_rotation.x);
-	Matrix rotmatY = Matrix::CreateRotationY(m_rotation.y);
+	Matrix rotmat;
 
-	Matrix rotmat = rotmatZ * rotmatX * rotmatY;
+	//　回転行列
+	if (m_UseQuternion)
+	{//　クォータニオンから回転行列を計算する
+		rotmat = Matrix::CreateFromQuaternion(m_rotationQ);
+	}
+	else
+	{//　オイラー角から回転行列を計算する
+		Matrix rotmatZ = Matrix::CreateRotationZ(m_rotation.z);
+		Matrix rotmatX = Matrix::CreateRotationX(m_rotation.x);
+		Matrix rotmatY = Matrix::CreateRotationY(m_rotation.y);
 
+		rotmat = rotmatZ * rotmatX * rotmatY;
+	}
 	//　平行移動行列
 	Matrix transmat = Matrix::CreateTranslation(m_translation);
 

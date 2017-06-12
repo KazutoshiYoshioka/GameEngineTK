@@ -5,6 +5,7 @@
 //ヘッダファイルのインクルード
 #include "pch.h"
 #include "Game.h"
+#include <time.h>
 
 
 
@@ -21,6 +22,7 @@ Game::Game() :
     m_outputHeight(600),
     m_featureLevel(D3D_FEATURE_LEVEL_9_1)
 {
+	srand((unsigned int)time(nullptr));
 }
 
 // Initialize the Direct3D resources required to run.
@@ -85,7 +87,7 @@ void Game::Initialize(HWND window, int width, int height)
 	m_factory->SetDirectory(L"Resources");
 
 	//　モデルの読み込み
-	m_ObjSkydoom.LoadModel(L"Resources/Skydoom.cmo");
+	//m_ObjSkydoom->LoadModel(L"Resources/Skydoom.cmo");
 
 	m_modelGround = Model::CreateFromCMO(m_d3dDevice.Get(), L"Resources/ground200m.cmo", *m_factory);
 	m_modelBall = Model::CreateFromCMO(m_d3dDevice.Get(), L"Resources/ball.cmo", *m_factory);
@@ -95,31 +97,29 @@ void Game::Initialize(HWND window, int width, int height)
 
 	m_TankRot = 0.0f;
 
-	m_ObjTank.LoadModel(L"Resources/sangou.cmo");
-	m_ObjTank.SetScale(Vector3(0.03f,0.03f,0.03f));
 
+	m_Player = std::make_unique<Player>(m_key.get());
 
-	m_ObjPlayer.resize(PLAYER_PARTS_NUM);
-	m_ObjPlayer[PLAYER_BODY].LoadModel(L"Resources/Body.cmo");
-	m_ObjPlayer[PLAYER_SHIP].LoadModel(L"Resources/Ship.cmo");
-	m_ObjPlayer[PLAYER_WING].LoadModel(L"Resources/Wing.cmo");
-	m_ObjPlayer[PLAYER_ENGINE].LoadModel(L"Resources/Engine.cmo");
-	m_ObjPlayer[PLAYER_CANNON].LoadModel(L"Resources/Cannon.cmo");
+	m_Enemies.resize(ENEMY_NUM);
+	for (int i = 0; i < ENEMY_NUM; i++)
+	{
+		m_Enemies[i] = std::make_unique<Enemy>();
+		m_Enemies[i]->Initialize();
+	}
 
-	//　親子関係
-	m_ObjPlayer[PLAYER_SHIP].SetObjectParent(&m_ObjPlayer[PLAYER_BODY]);
-	m_ObjPlayer[PLAYER_WING].SetObjectParent(&m_ObjPlayer[PLAYER_BODY]);
-	m_ObjPlayer[PLAYER_ENGINE].SetObjectParent(&m_ObjPlayer[PLAYER_BODY]);
-	m_ObjPlayer[PLAYER_CANNON].SetObjectParent(&m_ObjPlayer[PLAYER_BODY]);
+	m_view = Matrix::CreateLookAt(Vector3(2.f, 2.f, 2.f),
+		Vector3::Zero, Vector3::UnitY);
+	m_proj = Matrix::CreatePerspectiveFieldOfView(XM_PI / 4.f,
+		float(m_outputWidth) / float(m_outputHeight), 0.1f, 1000.f);
 
-	//　親からずらす
-	m_ObjPlayer[PLAYER_BODY].SetTranslation(Vector3(0, 1.0, 0));
-	m_ObjPlayer[PLAYER_SHIP].SetTranslation(Vector3(0, -0.5, 0));
-	m_ObjPlayer[PLAYER_WING].SetTranslation(Vector3(1, 0, 0));
-	m_ObjPlayer[PLAYER_ENGINE].SetTranslation(Vector3(1, 0.35, 0));
-	m_ObjPlayer[PLAYER_CANNON].SetTranslation(Vector3(1, 0.35, 0));
+	m_ObjTank->LoadModel(L"Resources/sangou.cmo");
+	m_ObjTank->SetScale(Vector3(0.03f, 0.03f, 0.03f));
 
-	m_ObjPlayer[PLAYER_WING].SetRotation(Vector3(0, XMConvertToRadians(90), 0));
+	// 指定範囲をランダムで返すラムダ式
+	auto rand_value = [](float min, float max)
+	{
+		return (max - min) * (float)rand() / RAND_MAX + min;
+	};
 }
 
 // Executes the basic game loop.
@@ -213,10 +213,10 @@ void Game::Update(DX::StepTimer const& timer)
 		Vector3 moveV(0, 0, 0.1f);
 		//　角度に合わせて移動ベクトルを回転させる
 		//moveV = Vector3::TransformNormal(moveV, m_worldTank);
-		Matrix rotmove = Matrix::CreateRotationY(m_ObjPlayer[PLAYER_BODY].GetRotation().y);
+		Matrix rotmove = Matrix::CreateRotationY(m_ObjTank->GetRotation().y);
 		moveV = Vector3::TransformNormal(moveV, rotmove);
 
-		m_ObjPlayer[PLAYER_BODY].SetTranslation(m_ObjPlayer[PLAYER_BODY].GetTranslation() - moveV);
+		m_ObjTank->SetTranslation(m_ObjTank->GetTranslation() - moveV);
 		//　自機の座標
 		m_TankPos += moveV;
 	}
@@ -224,16 +224,23 @@ void Game::Update(DX::StepTimer const& timer)
 	{
 		//　移動ベクトル
 		Vector3 moveV(0, 0, -0.1f);
-		Matrix rotmove = Matrix::CreateRotationY(m_ObjPlayer[PLAYER_BODY].GetRotation().y);
+		Matrix rotmove = Matrix::CreateRotationY(m_ObjTank->GetRotation().y);
 		moveV = Vector3::TransformNormal(moveV, rotmove);
 
-		m_ObjPlayer[PLAYER_BODY].SetTranslation(m_ObjPlayer[PLAYER_BODY].GetTranslation() - moveV);
+		m_ObjTank->SetTranslation(m_ObjTank->GetTranslation() - moveV);
 
 		//　自機の座標
 		m_TankPos += moveV;
 	}
 
-	m_ObjPlayer[PLAYER_BODY].SetRotation(Vector3(0, XMConvertToRadians(m_TankRot), 0));
+	m_Player->Update();
+
+	for (std::vector<std::unique_ptr<Enemy>>::iterator it = m_Enemies.begin();
+		it != m_Enemies.end();
+		it++)
+	{
+		(*it)->Update();
+	}
 
 	{//　自機のワールド行列を計算
 		//　平行移動行列
@@ -250,23 +257,18 @@ void Game::Update(DX::StepTimer const& timer)
 		m_worldTank2 = transTank2 * m_worldTank;
 	}
 	
-	m_camera->SetTargetPos(m_ObjPlayer[PLAYER_BODY].GetTranslation());
-	m_camera->SetTargetAngle(m_ObjPlayer[PLAYER_BODY].GetRotation().y);
+	m_camera->SetTargetPos(m_Player->GetTranslation());
+	m_camera->SetTargetAngle(m_Player->GetRotation().y);
 
 	//　カメラの更新
 	m_camera->Update();
 	m_view = m_camera->GetViewMatrix();
 	m_proj = m_camera->GetProjectionMatrix();
 
-	m_ObjSkydoom.Update();
-	m_ObjTank.Update();
+	
+	m_ObjSkydoom->Update();
+	m_ObjTank->Update();
 
-	for (std::vector<Obj3d>::iterator it = m_ObjPlayer.begin();
-		it !=m_ObjPlayer.end();
-		it++)
-	{
-		it->Update();
-	}
 }
 
 // Draws the scene.
@@ -343,9 +345,9 @@ void Game::Render()
 	m_d3dContext->IASetInputLayout(m_inputLayout.Get());
 
 	//　天球を描画
-	m_ObjSkydoom.Draw();
+	m_ObjSkydoom->Draw();
 
-//	m_ObjTank.Draw();
+	m_ObjTank->Draw();
 
 	//　地面を描画
 	m_modelGround->Draw(m_d3dContext.Get(), *m_states, Matrix::Identity, m_view, m_proj);
@@ -365,9 +367,13 @@ void Game::Render()
 	//　戦車描画
 	//m_modelTank->Draw(m_d3dContext.Get(), *m_states, m_worldTank, m_view, m_proj);
 
-	for (std::vector<Obj3d>::iterator it = m_ObjPlayer.begin(); it != m_ObjPlayer.end(); it++)
+	m_Player->Draw();
+
+	for (std::vector<std::unique_ptr<Enemy>>::iterator it = m_Enemies.begin();
+		it != m_Enemies.end();
+		it++)
 	{
-		it->Draw();
+		(*it)->Draw();
 	}
 
 	//　ボールを描画

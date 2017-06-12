@@ -18,24 +18,14 @@
 #include "Camera.h"
 #include "FollowCamera.h"
 #include "Obj3d.h"
+#include "Player.h"
+#include "Enemy.h"
 
 // A basic game implementation that creates a D3D11 device and
 // provides a game loop.
 class Game
 {
 public:
-
-	enum PLAYER_PARTS
-	{
-		PLAYER_BODY,	//　機体
-		PLAYER_SHIP,	//　船体
-		PLAYER_WING,	//　翼
-		PLAYER_ENGINE,	//　エンジン
-		PLAYER_CANNON,	//　砲塔
-
-		PLAYER_PARTS_NUM
-	};
-
     Game();
 
     // Initialization and management
@@ -109,9 +99,12 @@ private:
 	std::unique_ptr<DirectX::Model> m_modelBall;
 	std::unique_ptr<DirectX::Model> m_modelSmallTank;
 
-	Obj3d m_ObjSkydoom;
-	std::vector<Obj3d> m_ObjPlayer;
-	Obj3d m_ObjTank;
+	static const int ENEMY_NUM = 5;
+
+	std::unique_ptr<Obj3d> m_ObjSkydoom;
+	std::unique_ptr<Obj3d> m_ObjTank;
+	std::unique_ptr<Player> m_Player;
+	std::vector<std::unique_ptr<Enemy>> m_Enemies;
 
 	std::unique_ptr<DirectX::Model> m_modelTank;
 

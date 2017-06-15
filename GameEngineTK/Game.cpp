@@ -87,7 +87,7 @@ void Game::Initialize(HWND window, int width, int height)
 	m_factory->SetDirectory(L"Resources");
 
 	//　モデルの読み込み
-	//m_ObjSkydoom->LoadModel(L"Resources/Skydoom.cmo");
+	m_ObjSkydoom.LoadModel(L"Resources/Skydoom.cmo");
 
 	m_modelGround = Model::CreateFromCMO(m_d3dDevice.Get(), L"Resources/ground200m.cmo", *m_factory);
 	m_modelBall = Model::CreateFromCMO(m_d3dDevice.Get(), L"Resources/ball.cmo", *m_factory);
@@ -112,8 +112,8 @@ void Game::Initialize(HWND window, int width, int height)
 	m_proj = Matrix::CreatePerspectiveFieldOfView(XM_PI / 4.f,
 		float(m_outputWidth) / float(m_outputHeight), 0.1f, 1000.f);
 
-	m_ObjTank->LoadModel(L"Resources/sangou.cmo");
-	m_ObjTank->SetScale(Vector3(0.03f, 0.03f, 0.03f));
+	m_ObjTank.LoadModel(L"Resources/sangou.cmo");
+	m_ObjTank.SetScale(Vector3(0.03f, 0.03f, 0.03f));
 
 	// 指定範囲をランダムで返すラムダ式
 	auto rand_value = [](float min, float max)
@@ -169,8 +169,8 @@ void Game::Update(DX::StepTimer const& timer)
 		m_ground[i] = transground;
 	}*/
 
-	static int a = 0;
-	a++;
+	static float a = 0;
+	a += 0.2;
 	//　２０個の天球の行列
 	for (int i = 0; i < 20; i++)
 	{
@@ -213,10 +213,10 @@ void Game::Update(DX::StepTimer const& timer)
 		Vector3 moveV(0, 0, 0.1f);
 		//　角度に合わせて移動ベクトルを回転させる
 		//moveV = Vector3::TransformNormal(moveV, m_worldTank);
-		Matrix rotmove = Matrix::CreateRotationY(m_ObjTank->GetRotation().y);
+		Matrix rotmove = Matrix::CreateRotationY(m_ObjTank.GetRotation().y);
 		moveV = Vector3::TransformNormal(moveV, rotmove);
 
-		m_ObjTank->SetTranslation(m_ObjTank->GetTranslation() - moveV);
+		m_ObjTank.SetTranslation(m_ObjTank.GetTranslation() - moveV);
 		//　自機の座標
 		m_TankPos += moveV;
 	}
@@ -224,10 +224,10 @@ void Game::Update(DX::StepTimer const& timer)
 	{
 		//　移動ベクトル
 		Vector3 moveV(0, 0, -0.1f);
-		Matrix rotmove = Matrix::CreateRotationY(m_ObjTank->GetRotation().y);
+		Matrix rotmove = Matrix::CreateRotationY(m_ObjTank.GetRotation().y);
 		moveV = Vector3::TransformNormal(moveV, rotmove);
 
-		m_ObjTank->SetTranslation(m_ObjTank->GetTranslation() - moveV);
+		m_ObjTank.SetTranslation(m_ObjTank.GetTranslation() - moveV);
 
 		//　自機の座標
 		m_TankPos += moveV;
@@ -266,8 +266,8 @@ void Game::Update(DX::StepTimer const& timer)
 	m_proj = m_camera->GetProjectionMatrix();
 
 	
-	m_ObjSkydoom->Update();
-	m_ObjTank->Update();
+	m_ObjSkydoom.Update();
+	m_ObjTank.Update();
 
 }
 
@@ -345,9 +345,9 @@ void Game::Render()
 	m_d3dContext->IASetInputLayout(m_inputLayout.Get());
 
 	//　天球を描画
-	m_ObjSkydoom->Draw();
+	m_ObjSkydoom.Draw();
 
-	m_ObjTank->Draw();
+	m_ObjTank.Draw();
 
 	//　地面を描画
 	m_modelGround->Draw(m_d3dContext.Get(), *m_states, Matrix::Identity, m_view, m_proj);

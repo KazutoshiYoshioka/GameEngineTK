@@ -162,6 +162,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Collision.h" />
     <ClInclude Include="DebugCamera.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="FollowCamera.h" />
@@ -173,6 +174,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Collision.cpp" />
     <ClCompile Include="DebugCamera.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="FollowCamera.cpp" />
@@ -203,7 +205,9 @@
   </ItemGroup>
   <ItemGroup>
     <MeshContentTask Include="Assets\ball.FBX" />
+    <MeshContentTask Include="Assets\Battery.FBX" />
     <MeshContentTask Include="Assets\Body.FBX" />
+    <MeshContentTask Include="Assets\Burst.FBX" />
     <MeshContentTask Include="Assets\Cannon.FBX" />
     <MeshContentTask Include="Assets\Engine.FBX" />
     <MeshContentTask Include="Assets\ground1m.FBX" />

@@ -13,13 +13,15 @@ Player::Player(Keyboard* pKey)
 
 void Player::Initialize()
 {
+	m_FireFlag = false;
+
 	//　モデルのロード
 	m_ObjPlayer.resize(PLAYER_PARTS_NUM);
-	m_ObjPlayer[PLAYER_BODY].LoadModel(L"Resources/Body.cmo");
-	m_ObjPlayer[PLAYER_SHIP].LoadModel(L"Resources/Ship.cmo");
+	m_ObjPlayer[PLAYER_BODY].LoadModel(L"Resources/Tank.cmo");
+	m_ObjPlayer[PLAYER_SHIP].LoadModel(L"Resources/Battery.cmo");
 	m_ObjPlayer[PLAYER_WING].LoadModel(L"Resources/Wing.cmo");
 	m_ObjPlayer[PLAYER_ENGINE].LoadModel(L"Resources/Engine.cmo");
-	m_ObjPlayer[PLAYER_CANNON].LoadModel(L"Resources/Cannon.cmo");
+	m_ObjPlayer[PLAYER_CANNON].LoadModel(L"Resources/Burst.cmo");
 
 	//　親子関係
 	m_ObjPlayer[PLAYER_SHIP].SetObjectParent(&m_ObjPlayer[PLAYER_BODY]);
@@ -28,11 +30,19 @@ void Player::Initialize()
 	m_ObjPlayer[PLAYER_CANNON].SetObjectParent(&m_ObjPlayer[PLAYER_BODY]);
 
 	//　親からずらす
-	m_ObjPlayer[PLAYER_BODY].SetTranslation(Vector3(0, 1.0, 0));
-	m_ObjPlayer[PLAYER_SHIP].SetTranslation(Vector3(0, -0.5, 0));
-	m_ObjPlayer[PLAYER_WING].SetTranslation(Vector3(1, 0, 0));
-	m_ObjPlayer[PLAYER_ENGINE].SetTranslation(Vector3(1, 0.35, 0));
-	m_ObjPlayer[PLAYER_CANNON].SetTranslation(Vector3(1, 0.35, 0));
+	m_ObjPlayer[PLAYER_BODY].SetTranslation(Vector3(0, 0.0, 0));
+	m_ObjPlayer[PLAYER_SHIP].SetTranslation(Vector3(0, 0.5, 0));
+	m_ObjPlayer[PLAYER_WING].SetTranslation(Vector3(1, 30, 0));
+	m_ObjPlayer[PLAYER_ENGINE].SetTranslation(Vector3(0, 0.65, 0.5));
+	m_ObjPlayer[PLAYER_CANNON].SetTranslation(Vector3(0, 0.65, 0));
+
+
+	//
+	m_ObjPlayer[PLAYER_SHIP].SetScale(Vector3(0.6,0.6,0.6));
+	m_ObjPlayer[PLAYER_CANNON].SetScale(Vector3(3, 1, 1));
+
+	//
+	m_ObjPlayer[PLAYER_CANNON].SetRotation(Vector3(0, XMConvertToRadians(-90), 0));
 }
 
 void Player::Update()
@@ -73,7 +83,7 @@ void Player::Update()
 		Vector3 trans = m_ObjPlayer[PLAYER_BODY].GetTranslation();
 		float rot_y = m_ObjPlayer[PLAYER_BODY].GetRotation().y;
 		//　移動ベクトル（Z座標前進）
-		Vector3 moveV(0, 0, -1.0f);
+		Vector3 moveV(0, 0, -0.1f);
 		Matrix rotm = Matrix::CreateRotationY(rot_y);
 		//　移動ベクトルを回転する
 		moveV = Vector3::TransformNormal(moveV, rotm);
@@ -98,7 +108,34 @@ void Player::Update()
 		m_ObjPlayer[PLAYER_BODY].SetTranslation(trans);
 	}
 
+	if (m_KeyboardTracker.IsKeyPressed(Keyboard::Keys::Space))
+	{
+		if (m_FireFlag)
+		{
+			ReloadBullet();
+		}
+		else
+		{
+			FireBullet();
+		}
+	}
+
+	if (m_FireFlag)
+	{
+		Vector3 trans = m_ObjPlayer[PLAYER_ENGINE].GetTranslation();
+
+		trans += m_BulletVel;
+
+		m_ObjPlayer[PLAYER_ENGINE].SetTranslation(trans);
+
+		if (--m_FireCount < 0)
+		{
+			ReloadBullet();
+		}
+	}
+
 	Calc();
+
 }
 
 //-----------------------------------------------------------------------------
@@ -111,6 +148,65 @@ void Player::Calc()
 	{
 		m_ObjPlayer[i].Update();
 	}
+}
+
+//
+
+//
+void Player::FireBullet()
+{
+	//　既に発射中
+	if (m_FireFlag)return;
+
+	m_FireFlag = true;
+
+	Matrix worldm = m_ObjPlayer[PLAYER_ENGINE].GetWorld();
+
+	Vector3 scale;
+	Quaternion rotq;
+	Vector3 pos;
+
+	Vector3* m0 = (Vector3*)&worldm.m[0];
+	Vector3* m1 = (Vector3*)&worldm.m[1];
+	Vector3* m2 = (Vector3*)&worldm.m[2];
+	Vector3* m3 = (Vector3*)&worldm.m[3];
+
+	pos = *m3;
+
+	scale = Vector3(m0->Length(), m1->Length(), m2->Length());
+
+	m0->Normalize();
+	m1->Normalize();
+	m2->Normalize();
+
+	rotq = Quaternion::CreateFromRotationMatrix(worldm);
+
+	m_ObjPlayer[PLAYER_ENGINE].SetObjectParent(nullptr);
+	m_ObjPlayer[PLAYER_ENGINE].SetScale(scale);
+	m_ObjPlayer[PLAYER_ENGINE].SetRotationQ(rotq);
+	m_ObjPlayer[PLAYER_ENGINE].SetTranslation(pos);
+
+	m_BulletVel = Vector3(0, 0.0f, -0.3f);
+
+	m_BulletVel = Vector3::Transform(m_BulletVel, rotq);
+
+	m_FireCount = 120;
+}
+
+//
+//
+//
+void Player::ReloadBullet()
+{
+	if (!m_FireFlag)return;
+
+	m_ObjPlayer[PLAYER_ENGINE].SetObjectParent(&m_ObjPlayer[PLAYER_BODY]);
+
+	m_ObjPlayer[PLAYER_ENGINE].SetScale(Vector3(1, 1, 1));
+	m_ObjPlayer[PLAYER_ENGINE].SetRotation(Vector3(0, 0, 0));
+	m_ObjPlayer[PLAYER_ENGINE].SetTranslation(Vector3(0, 0.65, 0.5));
+
+	m_FireFlag = false;
 }
 
 //-----------------------------------------------------------------------------

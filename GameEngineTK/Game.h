@@ -101,8 +101,8 @@ private:
 
 	static const int ENEMY_NUM = 5;
 
-	std::unique_ptr<Obj3d> m_ObjSkydoom;
-	std::unique_ptr<Obj3d> m_ObjTank;
+	Obj3d m_ObjSkydoom;
+	Obj3d m_ObjTank;
 	std::unique_ptr<Player> m_Player;
 	std::vector<std::unique_ptr<Enemy>> m_Enemies;
 

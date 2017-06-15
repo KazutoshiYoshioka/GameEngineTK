@@ -37,6 +37,12 @@ class Player
 		//　行列の計算
 		void Calc();
 
+		// パーツを発射
+		void FireBullet();
+
+		//　弾の再装填
+		void ReloadBullet();
+
 		//　描画
 		void Draw();
 
@@ -65,4 +71,7 @@ class Player
 		DirectX::Keyboard* m_pKeyboard;
 		DirectX::Keyboard::KeyboardStateTracker m_KeyboardTracker;
 
+		bool m_FireFlag;
+		DirectX::SimpleMath::Vector3 m_BulletVel;
+		int m_FireCount;
 };

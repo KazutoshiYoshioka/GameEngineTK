@@ -59,48 +59,42 @@ Enemy::~Enemy()
 void Enemy::Initialize()
 {
 	m_Obj.resize(PARTS_NUM);
-	m_Obj[PARTS_BODY].LoadModel(L"Resources/Body.cmo");
-	m_Obj[PARTS_COCKPIT].LoadModel(L"Resources/Cannon.cmo");
-	m_Obj[PARTS_LAUNCHER].LoadModel(L"Resources/Engine.cmo");
-	m_Obj[PARTS_SHIELD].LoadModel(L"Resources/Ship.cmo");
-	m_Obj[PARTS_DRILL].LoadModel(L"Resources/Wing.cmo");
+	m_Obj[PARTS_BODY].LoadModel(L"Resources/Tank.cmo");
+	m_Obj[PARTS_BATTERY].LoadModel(L"Resources/Battery.cmo");
+	m_Obj[PARTS_CANNON].LoadModel(L"Resources/Burst.cmo");
+	m_Obj[PARTS_ENGINE].LoadModel(L"Resources/Engine.cmo");
 
 	// パーツの親子関係をセット
-	m_Obj[PARTS_COCKPIT].SetObjectParent(
+	m_Obj[PARTS_BATTERY].SetObjectParent(
 		&m_Obj[PARTS_BODY]);
 
-	m_Obj[PARTS_DRILL].SetObjectParent(
-		&m_Obj[PARTS_COCKPIT]);
-
-	m_Obj[PARTS_LAUNCHER].SetObjectParent(
+	m_Obj[PARTS_CANNON].SetObjectParent(
 		&m_Obj[PARTS_BODY]);
 
-	m_Obj[PARTS_SHIELD].SetObjectParent(
+	m_Obj[PARTS_ENGINE].SetObjectParent(
 		&m_Obj[PARTS_BODY]);
+
 
 	// 親からのオフセット（座標のずらし分）をセット
-	m_Obj[PARTS_COCKPIT].SetTranslation(
-		Vector3(0, 0.37f, -0.4f));
-	m_Obj[PARTS_COCKPIT].SetRotation(
-		Vector3(0, XM_PI, 0));
+	//　親からずらす
+	m_Obj[PARTS_BODY].SetTranslation(Vector3(0, 0.0, 0));
+	m_Obj[PARTS_BATTERY].SetTranslation(Vector3(0, 0.5, 0));
+	m_Obj[PARTS_CANNON].SetTranslation(Vector3(0, 0.65, 0));
+	m_Obj[PARTS_ENGINE].SetTranslation(Vector3(0, 0.65, 0.5));
+	
 
-	m_Obj[PARTS_DRILL].SetTranslation(
-		Vector3(0, 0.1f, 0.8f));
 
-	m_Obj[PARTS_LAUNCHER].SetTranslation(
-		Vector3(0, 0.37f, 0.4f));
+	//
+	m_Obj[PARTS_BATTERY].SetScale(Vector3(0.6, 0.6, 0.6));
+	m_Obj[PARTS_CANNON].SetScale(Vector3(3, 1, 1));
 
-	m_Obj[PARTS_SHIELD].SetTranslation(
-		Vector3(-0.8f, 0.37f, 0));
-	m_Obj[PARTS_SHIELD].SetScale(
-		Vector3(2, 2, 2));
-	m_Obj[PARTS_SHIELD].SetRotation(
-		Vector3(0, 0, XM_PIDIV2));
+	//
+	m_Obj[PARTS_CANNON].SetRotation(Vector3(0, XMConvertToRadians(-90), 0));
 
 	// 初期配置ランダム
 	Vector3 pos;
 	pos.x = (float)rand() / RAND_MAX * 20.0f - 10.0f;
-	pos.y = 0.5f;
+	pos.y = 0.0f;
 	pos.z = (float)rand() / RAND_MAX * 20.0f - 10.0f;
 	m_Obj[0].SetTranslation(pos);
 
@@ -152,7 +146,7 @@ void Enemy::Update()
 		// 今の座標を取得
 		Vector3 trans = m_Obj[0].GetTranslation();
 
-		Vector3 move(0, 0, -0.02f);
+		Vector3 move(0, 0, -0.05f);
 		Vector3 rotv = m_Obj[0].GetRotation();
 		Matrix rotm = Matrix::CreateRotationY(rotv.y);
 		move = Vector3::TransformNormal(move, rotm);

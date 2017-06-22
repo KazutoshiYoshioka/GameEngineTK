@@ -43,6 +43,15 @@ void Player::Initialize()
 
 	//
 	m_ObjPlayer[PLAYER_CANNON].SetRotation(Vector3(0, XMConvertToRadians(-90), 0));
+
+	//　初期化
+	m_CollisionNodeBullet.Initialize();
+	//　自機のベースとなるパーツにぶら下げる
+	m_CollisionNodeBullet.SetParent(&m_ObjPlayer[PLAYER_ENGINE]);
+	//　武器からのオフセット
+	m_CollisionNodeBullet.SetTrans(Vector3(0, 0, 0.3));
+	//　あたり判定の半径
+	m_CollisionNodeBullet.SetLocalRadius(0.3f);
 }
 
 void Player::Update()
@@ -136,6 +145,8 @@ void Player::Update()
 
 	Calc();
 
+	//　あたり判定の更新
+	m_CollisionNodeBullet.Update();
 }
 
 //-----------------------------------------------------------------------------
@@ -148,6 +159,7 @@ void Player::Calc()
 	{
 		m_ObjPlayer[i].Update();
 	}
+	
 }
 
 //
@@ -219,5 +231,6 @@ void Player::Draw()
 	{
 		m_ObjPlayer[i].Draw();
 	}
+	m_CollisionNodeBullet.Draw();
 }
 

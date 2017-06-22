@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "Obj3d.h"
+#include "CollisionNode.h"
 
 class Player
 {		
@@ -63,6 +64,8 @@ class Player
 		void SetTranslation(const DirectX::SimpleMath::Vector3& trans) { m_ObjPlayer[PLAYER_BODY].SetTranslation(trans); }
 		// ‰ñ“]‚ğİ’è
 		void SetRotation(const DirectX::SimpleMath::Vector3& rot) { m_ObjPlayer[PLAYER_BODY].SetRotation(rot); }
+		//@’eŠÛ‚Ì“–‚½‚è”»’è‹…
+		const SphereNode& GetCollisionNodeBullet() { return m_CollisionNodeBullet; }
 
 	protected:
 		std::vector<Obj3d> m_ObjPlayer;
@@ -74,4 +77,7 @@ class Player
 		bool m_FireFlag;
 		DirectX::SimpleMath::Vector3 m_BulletVel;
 		int m_FireCount;
+
+		//@‚ ‚½‚è”»’è
+		SphereNode m_CollisionNodeBullet;
 };

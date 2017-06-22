@@ -103,14 +103,15 @@ void Enemy::Initialize()
 	m_Obj[0].SetRotation(Vector3(0, XMConvertToRadians(m_angle), 0));
 
 	// ìñÇΩÇËîªíË
-	/*m_CollisionNodeBody.Initialize();
+	m_CollisionNodeBody.Initialize();
 	m_CollisionNodeBody.SetParent(&m_Obj[0]);
+	m_CollisionNodeBody.SetLocalRadius(1.0f);
 	m_CollisionNodeBody.SetTrans(Vector3(0, 0.3f, 0));
-	m_CollisionNodeBody.SetLocalRadius(1.0f);*/
+	
 
-	//m_ObjShadow.LoadModel(L"Resources/shadow.cmo");
-	//m_ObjShadow.SetTranslation(Vector3(0, -0.4f, 0));
-	//m_ObjShadow.SetObjectParent(&m_Obj[0]);
+	/*m_ObjShadow.LoadModel(L"Resources/shadow.cmo");
+	m_ObjShadow.SetTranslation(Vector3(0, -0.4f, 0));
+	m_ObjShadow.SetObjectParent(&m_Obj[0]);*/
 }
 
 //-----------------------------------------------------------------------------
@@ -159,7 +160,7 @@ void Enemy::Update()
 	// à⁄ìÆÇîΩâfÇµÇƒçsóÒçXêV
 	Calc();
 
-//	m_CollisionNodeBody.Update();
+	m_CollisionNodeBody.Update();
 }
 
 //-----------------------------------------------------------------------------
@@ -193,7 +194,7 @@ void Enemy::Draw()
 		m_Obj[i].Draw();
 	}
 
-	//m_CollisionNodeBody.Draw();
+	m_CollisionNodeBody.Draw();
 
 	//// âeÇå∏éZï`âÊ
 	//m_ObjShadow.DrawSubtractive();

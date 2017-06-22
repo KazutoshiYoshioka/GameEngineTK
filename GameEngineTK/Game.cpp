@@ -233,15 +233,6 @@ void Game::Update(DX::StepTimer const& timer)
 		m_TankPos += moveV;
 	}
 
-	m_Player->Update();
-
-	for (std::vector<std::unique_ptr<Enemy>>::iterator it = m_Enemies.begin();
-		it != m_Enemies.end();
-		it++)
-	{
-		(*it)->Update();
-	}
-
 	{//　自機のワールド行列を計算
 		//　平行移動行列
 		Matrix transTank = Matrix::CreateTranslation(m_TankPos);
@@ -256,6 +247,58 @@ void Game::Update(DX::StepTimer const& timer)
 		Matrix transTank2 = Matrix::CreateTranslation(Vector3(3.0f, 0, -2.5));
 		m_worldTank2 = transTank2 * m_worldTank;
 	}
+
+	m_Player->Update();
+
+	for (std::vector<std::unique_ptr<Enemy>>::iterator it = m_Enemies.begin();
+		it != m_Enemies.end();
+		it++)
+	{
+		(*it)->Update();
+	}
+
+	// 攻撃当たり判定
+	{
+		// プレイヤーの攻撃当たり球
+		const Sphere& sphereA = m_Player->GetCollisionNodeBullet();
+
+		// 全ての敵について判定する
+		for (std::vector<std::unique_ptr<Enemy>>::iterator it = m_Enemies.begin();
+			it != m_Enemies.end();
+			)
+		{
+			Enemy* enemy = it->get();
+
+			// 敵の被攻撃当たり球
+			const Sphere& sphereB = enemy->GetCollisionNodeBody();
+
+			Vector3 inter;
+
+			// 球と球の当たり
+			if (CheckSphere2Sphere(sphereA, sphereB, &inter))
+			{
+				m_Player->ReloadBullet();
+
+				//ModelEffectManager::getInstance()->Entry(
+				//	L"Resources/HitEffect.cmo",
+				//	10,
+				//	inter,	// 座標
+				//	Vector3(0, 0, 0),	// 速度
+				//	Vector3(0, 0, 0),	// 加速度
+				//	Vector3(0, 0, 0),	// 回転角（初期）
+				//	Vector3(0, 0, 0),	// 回転角（最終）
+				//	Vector3(0, 0, 0),	// スケール（初期）
+				//	Vector3(6, 6, 6)	// スケール（最終）
+				//);
+				it = m_Enemies.erase(it);
+			}
+			else
+			{
+				it++;
+			}
+		}
+	}
+
 	
 	m_camera->SetTargetPos(m_Player->GetTranslation());
 	m_camera->SetTargetAngle(m_Player->GetRotation().y);

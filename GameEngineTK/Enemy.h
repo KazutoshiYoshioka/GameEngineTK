@@ -10,8 +10,9 @@
 #include <d3d11_1.h>
 #include <SimpleMath.h>
 #include <vector>
-#include "Obj3d.h"
 
+#include "Obj3d.h"
+#include "CollisionNode.h"
 
 class Enemy
 {
@@ -41,7 +42,7 @@ public:
 	void Draw();
 
 	// ’eŠÛ‚Ì“–‚½‚è”»’è‹…‚ðŽæ“¾
-//	const SphereNode& GetCollisionNodeBody() { return m_CollisionNodeBody; }
+	const SphereNode& GetCollisionNodeBody() { return m_CollisionNodeBody; }
 
 	// Ž€–Sƒtƒ‰ƒO‚ð—§‚Ä‚é
 	void SetDeath() { m_Death = true; }
@@ -54,7 +55,7 @@ protected:
 
 	//Obj3d m_ObjShadow;
 
-	//SphereNode m_CollisionNodeBody;
+	SphereNode m_CollisionNodeBody;
 
 	// Šp“x
 	float m_angle;

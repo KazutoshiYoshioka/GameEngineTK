@@ -56,3 +56,4 @@ class Capsule
 
 };
 
+bool CheckSphere2Sphere(const Sphere& sphereA, const Sphere& sphereB, DirectX::SimpleMath::Vector3* _inter = nullptr);

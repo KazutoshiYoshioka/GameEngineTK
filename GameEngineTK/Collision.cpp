@@ -2,7 +2,29 @@
 
 using namespace DirectX::SimpleMath;
 
-bool CheckSphere2Sphere(const Sphere& sphereA, const Sphere& sphereB, DirectX::SimpleMath::Vector3* _inter = nullptr);
+// ƒxƒNƒgƒ‹‚Ì’·‚³‚Ì“ñæ‚ğŒvZ
+float VectorLengthSQ(const Vector3& v)
+{
+	float lengthsq;
+
+	// O•½•û‚Ì’è—
+	lengthsq = v.x * v.x + v.y * v.y + v.z * v.z;
+
+	return lengthsq;
+}
+
+// ‚Q“_ŠÔ‚Ì‹——£‚Ì“ñæ‚ğŒvZ
+float DistanceSQ3D(const Vector3& p1, const Vector3& p2)
+{
+	Vector3 sub;
+
+	sub = p1 - p2;
+
+	// ƒxƒNƒgƒ‹‚Ì’·‚³‚ğŒvZ‚·‚é
+	float distanceSQ = VectorLengthSQ(sub);
+
+	return distanceSQ;
+}
 
 bool CheckSphere2Sphere(const Sphere& sphereA, const Sphere& sphereB, Vector3* inter)
 {
@@ -10,14 +32,14 @@ bool CheckSphere2Sphere(const Sphere& sphereA, const Sphere& sphereB, Vector3* i
 	Vector3 sub = sphereB.Center - sphereA.Center;
 
 	//@O•½•û‚Ì’è—‚ÅAƒxƒNƒgƒ‹‚Ì’·‚³‚ğŒvZ‚·‚é
-	//@·•ªƒxƒNƒgƒ‹‚Ì’·‚³‚ÍA‚Q“_ŠÔ‚Ì‹——£
-	float distanceSquare = sub.x * sub.x + sub.y * sub.y + sub.z * sub.z;
+	float distanceSQ = DistanceSQ3D(sphereA.Center, sphereB.Center);
 
-	float radiusSquare = sphereA.Radius + sphereB.Radius;
-	radiusSquare = radiusSquare * radiusSquare;
+	// ”¼Œa‚Ì˜a
+	float radius_sum = sphereA.Radius + sphereB.Radius;
+	float radius_sumSQ = radius_sum * radius_sum;
 
-	//@‹——£‚ª”¼Œa‚Ì˜a‚æ‚è‘å‚«‚¯‚ê‚Î“–‚½‚Á‚Ä‚¢‚È‚¢
-	if (distanceSquare > sphereA.Radius + sphereB.Radius)
+	// ‹——£‚Ì“ñæ‚ª”¼Œa‚Ì˜a‚Ì“ñæ‚æ‚è‘å‚«‚¯‚ê‚Î“–‚½‚Á‚Ä‚¢‚È‚¢
+	if (distanceSQ > radius_sumSQ)
 	{
 		return false;
 	}

@@ -279,17 +279,7 @@ void Game::Update(DX::StepTimer const& timer)
 			{
 				m_Player->ReloadBullet();
 
-				//ModelEffectManager::getInstance()->Entry(
-				//	L"Resources/HitEffect.cmo",
-				//	10,
-				//	inter,	// 座標
-				//	Vector3(0, 0, 0),	// 速度
-				//	Vector3(0, 0, 0),	// 加速度
-				//	Vector3(0, 0, 0),	// 回転角（初期）
-				//	Vector3(0, 0, 0),	// 回転角（最終）
-				//	Vector3(0, 0, 0),	// スケール（初期）
-				//	Vector3(6, 6, 6)	// スケール（最終）
-				//);
+				
 				it = m_Enemies.erase(it);
 			}
 			else
@@ -390,7 +380,7 @@ void Game::Render()
 	//　天球を描画
 	m_ObjSkydoom.Draw();
 
-	m_ObjTank.Draw();
+//	m_ObjTank.Draw();
 
 	//　地面を描画
 	m_modelGround->Draw(m_d3dContext.Get(), *m_states, Matrix::Identity, m_view, m_proj);

@@ -19,6 +19,8 @@
     <ClInclude Include="Collision.h" />
     <ClInclude Include="CollisionNode.h" />
     <ClInclude Include="ModelEffect.h" />
+    <ClInclude Include="LandShape.h" />
+    <ClInclude Include="LandShapeData.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -33,6 +35,8 @@
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="CollisionNode.cpp" />
     <ClCompile Include="ModelEffect.cpp" />
+    <ClCompile Include="LandShape.cpp" />
+    <ClCompile Include="LandShapeData.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />
@@ -91,6 +95,9 @@
       <Filter>Assets</Filter>
     </MeshContentTask>
     <MeshContentTask Include="Assets\SphereNode.FBX">
+      <Filter>Assets</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="Assets\Fire.FBX">
       <Filter>Assets</Filter>
     </MeshContentTask>
   </ItemGroup>

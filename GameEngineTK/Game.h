@@ -21,6 +21,7 @@
 #include "Player.h"
 #include "Enemy.h"
 #include "Collision.h"
+#include "ModelEffect.h"
 
 // A basic game implementation that creates a D3D11 device and
 // provides a game loop.
@@ -106,6 +107,8 @@ private:
 	Obj3d m_ObjTank;
 	std::unique_ptr<Player> m_Player;
 	std::vector<std::unique_ptr<Enemy>> m_Enemies;
+
+	std::unique_ptr<ModelEffect> m_ModelEffect;
 
 	std::unique_ptr<DirectX::Model> m_modelTank;
 

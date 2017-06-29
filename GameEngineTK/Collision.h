@@ -56,4 +56,16 @@ class Capsule
 
 };
 
+// 法線付き三角形（反時計回りが表面）
+class Triangle
+{
+public:
+	DirectX::SimpleMath::Vector3	P0;
+	DirectX::SimpleMath::Vector3	P1;
+	DirectX::SimpleMath::Vector3	P2;
+	DirectX::SimpleMath::Vector3	Normal;	// 法線ベクトル
+};
+
 bool CheckSphere2Sphere(const Sphere& sphereA, const Sphere& sphereB, DirectX::SimpleMath::Vector3* _inter = nullptr);
+
+void ComputeTriangle(const Vector3& _p0, const Vector3& _p1, const Vector3& _p2, Triangle* _triangle);

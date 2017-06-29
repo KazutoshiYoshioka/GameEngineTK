@@ -48,6 +48,7 @@ public:
 	void SetDeath() { m_Death = true; }
 	bool GetDeath() { return m_Death; }
 
+
 protected:
 	// メンバ変数
 	// ３Ｄオブジェクト

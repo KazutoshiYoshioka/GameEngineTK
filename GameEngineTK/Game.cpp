@@ -107,6 +107,8 @@ void Game::Initialize(HWND window, int width, int height)
 		m_Enemies[i]->Initialize();
 	}
 
+	m_ModelEffect = std::make_unique<ModelEffect>();
+
 	m_view = Matrix::CreateLookAt(Vector3(2.f, 2.f, 2.f),
 		Vector3::Zero, Vector3::UnitY);
 	m_proj = Matrix::CreatePerspectiveFieldOfView(XM_PI / 4.f,
@@ -277,9 +279,10 @@ void Game::Update(DX::StepTimer const& timer)
 			// ‹…‚Æ‹…‚Ì“–‚½‚è
 			if (CheckSphere2Sphere(sphereA, sphereB, &inter))
 			{
+				m_ModelEffect->Initialize(L"Resources/Fire.cmo", 120, Vector3(0, 0, 0), Vector3(0, 1800, 0), Vector3(0, 0, 0), Vector3(5, 10, 5),sphereA.Center);
+				
 				m_Player->ReloadBullet();
 
-				
 				it = m_Enemies.erase(it);
 			}
 			else
@@ -288,7 +291,7 @@ void Game::Update(DX::StepTimer const& timer)
 			}
 		}
 	}
-
+	m_ModelEffect->Update();
 	
 	m_camera->SetTargetPos(m_Player->GetTranslation());
 	m_camera->SetTargetAngle(m_Player->GetRotation().y);
@@ -409,10 +412,13 @@ void Game::Render()
 		(*it)->Draw();
 	}
 
+	m_ModelEffect->Draw();
+
+
 	//@ƒ{[ƒ‹‚ğ•`‰æ
 	for (int i = 0; i < 20; i++)
 	{
-		m_modelBall->Draw(m_d3dContext.Get(), *m_states, m_worldBall[i], m_view, m_proj);
+	//	m_modelBall->Draw(m_d3dContext.Get(), *m_states, m_worldBall[i], m_view, m_proj);
 	}
 	m_primitiveBatch->Begin();
 

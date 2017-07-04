@@ -61,6 +61,8 @@ class Obj3d
 		void SetRotationQ(const DirectX::SimpleMath::Quaternion &rotationQ) { m_rotationQ = rotationQ; m_UseQuternion = true; }
 		//　平行移動用
 		void SetTranslation(const DirectX::SimpleMath::Vector3 &translation) { m_translation = translation; }
+		//　ローカルワールド
+		void SetWorld(const DirectX::SimpleMath::Matrix &world) { m_world = world; }
 		//　親行列用
 		void SetObjectParent(Obj3d *pObjParent) { m_pObjParent = pObjParent; }
 		//―――――――――――――――――――――――――――――――――

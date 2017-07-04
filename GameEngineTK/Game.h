@@ -22,6 +22,7 @@
 #include "Enemy.h"
 #include "Collision.h"
 #include "ModelEffect.h"
+#include "LandShape.h"
 
 // A basic game implementation that creates a D3D11 device and
 // provides a game loop.
@@ -97,7 +98,10 @@ private:
 
 	//　モデル
 	//std::unique_ptr<DirectX::Model> m_modelSkydoom;
-	std::unique_ptr<DirectX::Model> m_modelGround;
+	
+	//　地形
+	LandShape m_LandShape;
+
 	std::unique_ptr<DirectX::Model> m_modelBall;
 	std::unique_ptr<DirectX::Model> m_modelSmallTank;
 

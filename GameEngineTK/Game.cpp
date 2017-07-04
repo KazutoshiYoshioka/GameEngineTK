@@ -72,11 +72,20 @@ void Game::Initialize(HWND window, int width, int height)
 	m_camera = std::make_unique<FollowCamera>(m_outputWidth, m_outputHeight);
 	m_camera->SetKeyboard(m_key.get());
 
+	//　３Dオブジェクトクラスの静的メンバを初期化
 	Obj3d::InitializeStatic(
 		m_camera.get()
 		, m_d3dDevice
 		, m_d3dContext
 	);
+
+	//　地形の初期化に必要な設定
+	LandShapeCommonDef LscDef;
+	LscDef.pDevice = m_d3dDevice.Get();
+	LscDef.pDeviceContext = m_d3dContext.Get();
+	LscDef.pCamera = m_camera.get();
+	//　地形の共通初期化
+	LandShape::InitializeCommon(LscDef);
 
 	//　エフェクトファクトリーの生成
 	m_factory = std::make_unique<EffectFactory>(m_d3dDevice.Get());
@@ -89,7 +98,8 @@ void Game::Initialize(HWND window, int width, int height)
 	//　モデルの読み込み
 	m_ObjSkydoom.LoadModel(L"Resources/Skydoom.cmo");
 
-	m_modelGround = Model::CreateFromCMO(m_d3dDevice.Get(), L"Resources/ground200m.cmo", *m_factory);
+	//　地形の読み込み処理
+	m_LandShape.Initialize(L"ground200m", L"ground200m");
 	m_modelBall = Model::CreateFromCMO(m_d3dDevice.Get(), L"Resources/ball.cmo", *m_factory);
 	m_modelSmallTank = Model::CreateFromCMO(m_d3dDevice.Get(), L"Resources/Tank.cmo", *m_factory);
 
@@ -279,7 +289,7 @@ void Game::Update(DX::StepTimer const& timer)
 			// 球と球の当たり
 			if (CheckSphere2Sphere(sphereA, sphereB, &inter))
 			{
-				m_ModelEffect->Initialize(L"Resources/Fire.cmo", 120, Vector3(0, 0, 0), Vector3(0, 1800, 0), Vector3(0, 0, 0), Vector3(5, 10, 5),sphereA.Center);
+				m_ModelEffect->Initialize(L"Resources/Fire.cmo", 120, Vector3(0, 0, 0), Vector3(0, 1800, 0), Vector3(0, 0, 0), Vector3(5, 10, 5),sphereB.Center);
 				
 				m_Player->ReloadBullet();
 
@@ -303,6 +313,7 @@ void Game::Update(DX::StepTimer const& timer)
 
 	
 	m_ObjSkydoom.Update();
+	m_LandShape.Update();
 	m_ObjTank.Update();
 
 }
@@ -386,11 +397,7 @@ void Game::Render()
 //	m_ObjTank.Draw();
 
 	//　地面を描画
-	m_modelGround->Draw(m_d3dContext.Get(), *m_states, Matrix::Identity, m_view, m_proj);
-	/*for (int i = 0; i < 10000; i++)
-	{
-		m_modelGround->Draw(m_d3dContext.Get(), *m_states, m_ground[i], m_view, m_proj);
-	}*/
+	m_LandShape.Draw();
 
 	//　ボールを描画
 	//m_modelBall->Draw(m_d3dContext.Get(), *m_states, m_worldball, m_view, m_proj);

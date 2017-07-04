@@ -3,6 +3,8 @@
 
 using namespace DirectX::SimpleMath;
 
+bool CollisionNode::m_DebugVisible;
+
 //
 void CollisionNode::SetParent(Obj3d* parent)
 {

@@ -11,6 +11,14 @@
 class Player
 {		
 	public:
+		//　重力加速度
+		const float GRAVITY_ACC = 0.03f;
+		//　ジャンプ初速
+		const float JUMP_SPEED_FIRST = 0.5f;
+		//　ジャンプ最高速
+		const float JUMP_SPEED_MAX = 0.3f;
+
+		//　パーツ
 		enum 
 		{
 			PLAYER_BODY,	//　機体
@@ -38,14 +46,21 @@ class Player
 		//　行列の計算
 		void Calc();
 
+		//　描画
+		void Draw();
+
 		// パーツを発射
 		void FireBullet();
 
 		//　弾の再装填
 		void ReloadBullet();
 
-		//　描画
-		void Draw();
+		//　ジャンプ開始
+		void StartJump();
+		//　重力
+		void StartFall();
+		//　
+		void StopJump();
 
 		//――――――――――――――――――――
 		//　Getter
@@ -56,6 +71,12 @@ class Player
 		const DirectX::SimpleMath::Matrix& GetWorld() { return m_ObjPlayer[PLAYER_BODY].GetWorld(); }
 		//　回転を取得
 		const DirectX::SimpleMath::Vector3& GetRotation() { return m_ObjPlayer[PLAYER_BODY].GetRotation(); }
+		//　弾丸の当たり判定球
+		const SphereNode& GetCollisionNodeBullet() { return m_CollisionNodeBullet; }
+		// 弾丸の当たり判定球を取得
+		const SphereNode& GetCollisionNodeBody() { return m_CollisionNodeBody; }
+		//　速度を取得
+		const DirectX::SimpleMath::Vector3& GetVelocity() { return m_Velocity; }
 
 		//――――――――――――――――――――
 		//　Setter
@@ -64,8 +85,6 @@ class Player
 		void SetTranslation(const DirectX::SimpleMath::Vector3& trans) { m_ObjPlayer[PLAYER_BODY].SetTranslation(trans); }
 		// 回転を設定
 		void SetRotation(const DirectX::SimpleMath::Vector3& rot) { m_ObjPlayer[PLAYER_BODY].SetRotation(rot); }
-		//　弾丸の当たり判定球
-		const SphereNode& GetCollisionNodeBullet() { return m_CollisionNodeBullet; }
 
 	protected:
 		std::vector<Obj3d> m_ObjPlayer;
@@ -78,6 +97,14 @@ class Player
 		DirectX::SimpleMath::Vector3 m_BulletVel;
 		int m_FireCount;
 
-		//　あたり判定
+		//　攻撃用あたり判定
 		SphereNode m_CollisionNodeBullet;
+
+		//　全体の当たり判定
+		SphereNode m_CollisionNodeBody;
+
+		//　速度ベクトル
+		DirectX::SimpleMath::Vector3 m_Velocity;
+		//　ジャンプ中フラグ
+		bool m_isJump;
 };

@@ -14,6 +14,7 @@ Player::Player(Keyboard* pKey)
 void Player::Initialize()
 {
 	m_FireFlag = false;
+	m_isJump = false;
 
 	//　モデルのロード
 	m_ObjPlayer.resize(PLAYER_PARTS_NUM);
@@ -52,6 +53,12 @@ void Player::Initialize()
 	m_CollisionNodeBullet.SetTrans(Vector3(0, 0, 0.3));
 	//　あたり判定の半径
 	m_CollisionNodeBullet.SetLocalRadius(0.3f);
+
+	// 当たり判定
+	m_CollisionNodeBody.Initialize();
+	m_CollisionNodeBody.SetParent(&m_ObjPlayer[0]);
+	m_CollisionNodeBody.SetLocalRadius(0.5f);
+	m_CollisionNodeBody.SetTrans(Vector3(0, 0.5f, 0));
 }
 
 void Player::Update()
@@ -59,10 +66,25 @@ void Player::Update()
 	Keyboard::State keystate = m_pKeyboard->GetState();
 	m_KeyboardTracker.Update(keystate);
 
-
-	Vector3 pos = m_ObjPlayer[PLAYER_BODY].GetTranslation();
-	
-	m_ObjPlayer[PLAYER_BODY].SetTranslation(pos);
+	//　スペースを押したらジャンプ
+	if (m_KeyboardTracker.IsKeyPressed(Keyboard::Keys::Space))
+	{
+		//　ジャンプ開始
+		StartJump();
+	}
+	//　ジャンプ中なら
+	if (m_isJump)
+	{
+		//　下方向に加速
+		m_Velocity.y -= GRAVITY_ACC;
+		if (m_Velocity.y <= -JUMP_SPEED_MAX)
+		{
+			m_Velocity.y = -JUMP_SPEED_MAX;
+		}
+	}
+	Vector3 trans = this->GetTranslation();
+	trans += m_Velocity;
+	this->SetTranslation(trans);
 
 	// １フレームでの旋回速度<ラジアン>
 	const float ROT_SPEED = 0.03f;
@@ -117,7 +139,7 @@ void Player::Update()
 		m_ObjPlayer[PLAYER_BODY].SetTranslation(trans);
 	}
 
-	if (m_KeyboardTracker.IsKeyPressed(Keyboard::Keys::Space))
+	if (m_KeyboardTracker.IsKeyPressed(Keyboard::Keys::F))
 	{
 		if (m_FireFlag)
 		{
@@ -145,8 +167,7 @@ void Player::Update()
 
 	Calc();
 
-	//　あたり判定の更新
-	m_CollisionNodeBullet.Update();
+
 }
 
 //-----------------------------------------------------------------------------
@@ -159,8 +180,25 @@ void Player::Calc()
 	{
 		m_ObjPlayer[i].Update();
 	}
-	
+	//　あたり判定の更新
+	m_CollisionNodeBullet.Update();
+	m_CollisionNodeBody.Update();
 }
+
+//-----------------------------------------------------------------------------
+// 描画
+//-----------------------------------------------------------------------------
+void Player::Draw()
+{
+	// 全パーツ分描画
+	for (int i = 0; i < PLAYER_PARTS_NUM; i++)
+	{
+		m_ObjPlayer[i].Draw();
+	}
+	m_CollisionNodeBullet.Draw();
+	m_CollisionNodeBody.Draw();
+}
+
 
 //
 
@@ -221,16 +259,37 @@ void Player::ReloadBullet()
 	m_FireFlag = false;
 }
 
-//-----------------------------------------------------------------------------
-// 描画
-//-----------------------------------------------------------------------------
-void Player::Draw()
+
+// ジャンプを開始する
+void Player::StartJump()
 {
-	// 全パーツ分描画
-	for (int i = 0; i < PLAYER_PARTS_NUM; i++)
+	// ジャンプ中でないか
+	if (!m_isJump)
 	{
-		m_ObjPlayer[i].Draw();
+		// 上方向の初速を設定
+		m_Velocity.y = JUMP_SPEED_FIRST;
+		// ジャンプフラグを立てる
+		m_isJump = true;
 	}
-	m_CollisionNodeBullet.Draw();
+}
+
+// ジャンプを開始する
+void Player::StartFall()
+{
+	// ジャンプ中でないか
+	if (!m_isJump)
+	{
+		// 上方向の初速を設定
+		m_Velocity.y = 0.0f;
+		// ジャンプフラグを立てる
+		m_isJump = true;
+	}
+}
+
+//　ジャンプ終了
+void Player::StopJump()
+{
+	m_isJump = false;
+	m_Velocity = Vector3::Zero;
 }
 

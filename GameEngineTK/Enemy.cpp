@@ -59,37 +59,39 @@ Enemy::~Enemy()
 void Enemy::Initialize()
 {
 	m_Obj.resize(PARTS_NUM);
-	m_Obj[PARTS_BODY].LoadModel(L"Resources/Tank.cmo");
-	m_Obj[PARTS_BATTERY].LoadModel(L"Resources/Battery.cmo");
-	m_Obj[PARTS_CANNON].LoadModel(L"Resources/Burst.cmo");
-	m_Obj[PARTS_ENGINE].LoadModel(L"Resources/Engine.cmo");
+	m_Obj[PARTS_BODY].LoadModel(L"Resources/sangou.cmo");
+	//m_Obj[PARTS_BATTERY].LoadModel(L"Resources/Battery.cmo");
+	//m_Obj[PARTS_CANNON].LoadModel(L"Resources/Burst.cmo");
+	//m_Obj[PARTS_ENGINE].LoadModel(L"Resources/Engine.cmo");
 
-	// パーツの親子関係をセット
-	m_Obj[PARTS_BATTERY].SetObjectParent(
-		&m_Obj[PARTS_BODY]);
+	//// パーツの親子関係をセット
+	//m_Obj[PARTS_BATTERY].SetObjectParent(
+	//	&m_Obj[PARTS_BODY]);
 
-	m_Obj[PARTS_CANNON].SetObjectParent(
-		&m_Obj[PARTS_BODY]);
+	//m_Obj[PARTS_CANNON].SetObjectParent(
+	//	&m_Obj[PARTS_BODY]);
 
-	m_Obj[PARTS_ENGINE].SetObjectParent(
-		&m_Obj[PARTS_BODY]);
+	//m_Obj[PARTS_ENGINE].SetObjectParent(
+	//	&m_Obj[PARTS_BODY]);
 
 
 	// 親からのオフセット（座標のずらし分）をセット
 	//　親からずらす
-	m_Obj[PARTS_BODY].SetTranslation(Vector3(0, 0.0, 0));
-	m_Obj[PARTS_BATTERY].SetTranslation(Vector3(0, 0.5, 0));
-	m_Obj[PARTS_CANNON].SetTranslation(Vector3(0, 0.65, 0));
-	m_Obj[PARTS_ENGINE].SetTranslation(Vector3(0, 0.65, 0.5));
-	
-
-
+	//m_Obj[PARTS_BODY].SetTranslation(Vector3(0, 0.0, 0));
+	//m_Obj[PARTS_BATTERY].SetTranslation(Vector3(0, 0.5, 0));
+	//m_Obj[PARTS_CANNON].SetTranslation(Vector3(0, 0.65, 0));
+	//m_Obj[PARTS_ENGINE].SetTranslation(Vector3(0, 0.65, 0.5));
 	//
-	m_Obj[PARTS_BATTERY].SetScale(Vector3(0.6, 0.6, 0.6));
-	m_Obj[PARTS_CANNON].SetScale(Vector3(3, 1, 1));
 
-	//
-	m_Obj[PARTS_CANNON].SetRotation(Vector3(0, XMConvertToRadians(-90), 0));
+
+	////
+	//m_Obj[PARTS_BATTERY].SetScale(Vector3(0.6, 0.6, 0.6));
+	//m_Obj[PARTS_CANNON].SetScale(Vector3(3, 1, 1));
+
+	////
+	//m_Obj[PARTS_CANNON].SetRotation(Vector3(0, XMConvertToRadians(-90), 0));
+
+//	m_Obj[PARTS_BODY].SetScale(Vector3(0.02f, 0.02f, 0.02f));
 
 	// 初期配置ランダム
 	Vector3 pos;
@@ -172,7 +174,7 @@ void Enemy::Calc()
 	if (m_Death) return;
 
 	// 全パーツ分行列更新
-	for (int i = 0; i < PARTS_NUM; i++)
+	for (int i = 0; i < 1; i++)
 	{
 		m_Obj[i].Update();
 	}
@@ -189,7 +191,7 @@ void Enemy::Draw()
 	if (m_Death) return;
 
 	// 全パーツ分描画
-	for (int i = 0; i < PARTS_NUM; i++)
+	for (int i = 0; i < 1; i++)
 	{
 		m_Obj[i].Draw();
 	}

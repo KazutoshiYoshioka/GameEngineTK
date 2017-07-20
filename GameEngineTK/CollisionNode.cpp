@@ -53,5 +53,5 @@ void SphereNode::Update()
 
 void SphereNode::Draw()
 {
-	m_Obj.Draw();
+//	m_Obj.Draw();
 }

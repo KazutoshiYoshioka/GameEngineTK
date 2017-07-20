@@ -279,7 +279,7 @@ bool CheckSegment2Triangle(const Segment& _segment, const Triangle& _triangle, V
 	Vector3 	t12;		// 三角形の頂点1→頂点2
 	Vector3 	t20;		// 三角形の頂点2→頂点0
 	Vector3	m;
-
+	
 	// 線分の始点が三角系の裏側にあれば、当たらない
 	tls = _segment.Start - _triangle.P0;
 	distl0 = tls.Dot(_triangle.Normal);	// 線分の始点と平面の距離

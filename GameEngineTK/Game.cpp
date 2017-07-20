@@ -289,7 +289,7 @@ void Game::Update(DX::StepTimer const& timer)
 			// 球と球の当たり
 			if (CheckSphere2Sphere(sphereA, sphereB, &inter))
 			{
-				m_ModelEffect->Initialize(L"Resources/Fire.cmo", 120, Vector3(0, 0, 0), Vector3(0, 1800, 0), Vector3(0, 0, 0), Vector3(5, 10, 5),sphereB.Center);
+				m_ModelEffect->Initialize(L"Resources/Fire.cmo", 60, Vector3(0, 0, 0), Vector3(0, 720, 0), Vector3(0, 0, 0), Vector3(5, 10, 5),sphereB.Center);
 				
 				m_Player->ReloadBullet();
 
@@ -311,11 +311,65 @@ void Game::Update(DX::StepTimer const& timer)
 	m_view = m_camera->GetViewMatrix();
 	m_proj = m_camera->GetProjectionMatrix();
 
-	
 	m_ObjSkydoom.Update();
 	m_LandShape.Update();
 	m_ObjTank.Update();
 
+	{//　自機の地形へのめり込みを検出して、押し出す
+		//　自機の当たり判定Nodeを取得
+		Sphere sphere = m_Player->GetCollisionNodeBody();
+		//　自機のワールド座標を取得
+		Vector3 trans = m_Player->GetTranslation();
+		//　あたり判定の中心から自機の足元へのベクトル
+		Vector3 sphere2player = trans - sphere.Center;
+		//　排斥ベクトル（押出し）
+		Vector3 reject;
+
+		//　地形と球の当たり判定
+		if (m_LandShape.IntersectSphere(sphere, &reject))
+		{
+			//　めり込み分だけ球を押し出す
+			sphere.Center += reject;
+		}
+
+		//　めり込みを排除した座標をセット
+		m_Player->SetTranslation(sphere.Center += sphere2player);
+		//　自機のワールド行列更新
+		m_Player->Calc();
+	}
+
+	{//　地面に乗る処理
+		//　ジャンプしていなければ
+		if (m_Player->GetVelocity().y <= 0.0f)
+		{
+			//プレイヤーの上から下へのベクトル
+			Segment playerSegment;
+			Vector3 trans = m_Player->GetTranslation();
+			playerSegment.Start = trans + Vector3(0, 1, 0);//Y：プレイヤーの高さに応じて変更してね
+			//　５０cm下まで判定を取って吸着する
+			playerSegment.End = trans + Vector3(0, -0.5f, 0);
+
+			//　交点
+			Vector3 inter;
+			//　地形と線分の当たり判定
+			if (m_LandShape.IntersectSegment(playerSegment, &inter))
+			{
+				//　Y座標のみ交点の位置に移動
+				trans.y = inter.y;
+				m_Player->SetTranslation(trans);
+				//　自機のワールド行列更新
+				m_Player->Calc();
+
+				//　ジャンプ終了
+				m_Player->StopJump();
+			}
+			else
+			{
+				//　落下開始
+				m_Player->StartFall();
+			}
+		}
+	}
 }
 
 // Draws the scene.
@@ -400,7 +454,7 @@ void Game::Render()
 	m_LandShape.Draw();
 
 	//　ボールを描画
-	//m_modelBall->Draw(m_d3dContext.Get(), *m_states, m_worldball, m_view, m_proj);
+//	m_modelBall->Draw(m_d3dContext.Get(), *m_states, m_worldball, m_view, m_proj);
 	Matrix scalemat = Matrix::CreateScale(0.01f);
 
 	//m_modelTank->Draw(m_d3dContext.Get(), *m_states, scalemat*m_worldTank, m_view, m_proj);
@@ -425,7 +479,7 @@ void Game::Render()
 	//　ボールを描画
 	for (int i = 0; i < 20; i++)
 	{
-	//	m_modelBall->Draw(m_d3dContext.Get(), *m_states, m_worldBall[i], m_view, m_proj);
+		m_modelBall->Draw(m_d3dContext.Get(), *m_states, m_worldBall[i], m_view, m_proj);
 	}
 	m_primitiveBatch->Begin();
 
